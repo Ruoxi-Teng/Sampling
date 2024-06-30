@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-df=pd.read_csv("Total_summary.csv")
+df=pd.read_csv("Data/Total_summary.csv")
 # Create the line graph
 plt.figure(figsize=(12, 6))
 for column in df.columns[2:]:  # Exclude the 'Year' column

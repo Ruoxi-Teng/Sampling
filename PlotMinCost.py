@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 from scipy.stats import beta
 from itertools import combinations
 import numpy as np
-dt=pd.read_csv("CIP_summary.csv")
+dt=pd.read_csv("Data/CIP_summary.csv")
 
 
-def adaptive_sampling(data, num_sites, lambda_val=1, seed=573):
+def adaptive_sampling(data, num_sites=10, lambda_val=1, seed=573):
     # Sort data by year
     data = data.sort_values('YEAR')
     years = data['YEAR'].unique()
@@ -27,9 +27,12 @@ def adaptive_sampling(data, num_sites, lambda_val=1, seed=573):
 
         # Calculate not_selected_cost
         np.random.seed(seed + year)
-        data_year['not_selected_cost'] = data_year.apply(lambda row:
-                                                         np.mean(beta.rvs(row['alpha'], row['beta'], size=10000)),
-                                                         axis=1)
+        n_samples = 10000
+        alpha_values = np.maximum(data_year['alpha'].values, epsilon)
+        beta_values = np.maximum(data_year['beta'].values, epsilon)
+        random_samples = beta.rvs(alpha_values[:, np.newaxis], beta_values[:, np.newaxis],
+                                  size=(len(data_year), n_samples))
+        data_year['not_selected_cost'] = np.mean(random_samples, axis=1)
 
         # Calculate sampled_cost
         data_year['p'] = beta.cdf(0.05, data_year['alpha'], data_year['beta'])
@@ -110,7 +113,7 @@ def optimize_site_selection(data, num_sites):
 # we only use the data that occurs each year
 def preprocess_data(data):
     # Delete the first two rows
-    data = data.iloc[2:].reset_index(drop=True)
+    data = data.drop(data.columns[[0]],axis=1)
 
     # Calculate min and max years
     min_year = data['YEAR'].min()
@@ -125,8 +128,11 @@ def preprocess_data(data):
 
     return filtered_data
 
+
 processed_data = preprocess_data(dt)
+print(processed_data)
+
 
 result=adaptive_sampling(data=processed_data,num_sites=10)
-print(processed_data)
+
 print(result['data'])

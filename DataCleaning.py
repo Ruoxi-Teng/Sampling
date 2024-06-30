@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-dt = pd.read_excel(r"NEEMA_GISP Table 1_Sex Bx_Antibiotics_2000_2022_20240318.xlsx")
+dt = pd.read_excel(r"Data/NEEMA_GISP Table 1_Sex Bx_Antibiotics_2000_2022_20240318.xlsx")
 
 # Replace '.' with 0
 dt = dt.replace('.', 0)
@@ -89,6 +89,8 @@ dt_by_year_sites_cip = dt_by_year_sites[['CLINIC', 'YEAR', 'TOTAL', 'CipRsum']]
 
 # print(dt_by_year_sites_cip)
 
-dt_by_year_sites_cip.to_csv('CIP_summary.csv')
+dt_by_year_sites_cip.to_csv('Data/CIP_summary_by_sites.csv')
 
-dt4.to_csv("Total_summary.csv")
+dt4.to_csv("Data/Total_summary.csv")
+
+dt5.to_csv("Data/CIP_summary.csv")

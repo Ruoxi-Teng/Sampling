@@ -5,8 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b3022391-1393-4eca-8ec3-894acee0cf72" name="Changes" comment="plot prevalence">
+      <change afterPath="$PROJECT_DIR$/PlotCustomizedSampling.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PlotRandomSampling.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CIP_summary.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/CIP_summary.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataCleaning.py" beforeDir="false" afterPath="$PROJECT_DIR$/DataCleaning.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NEEMA_GISP Table 1_Sex Bx_Antibiotics_2000_2022_20240318.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/Data/NEEMA_GISP Table 1_Sex Bx_Antibiotics_2000_2022_20240318.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PlotMinCost.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotMinCost.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PlotPrevalence.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotPrevalence.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Total_summary.csv" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,8 +45,10 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Python.DataCleaning.executor": "Run",
+    "Python.PlotCustomizedSampling.executor": "Run",
     "Python.PlotMinCost.executor": "Run",
     "Python.PlotPrevalence.executor": "Run",
+    "Python.PlotRandomSampling.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
@@ -48,6 +57,7 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\tengr\PycharmProjects\Sampling\Data" />
       <recent name="C:\Users\tengr\PycharmProjects\Sampling" />
     </key>
   </component>
@@ -83,7 +93,15 @@
       <option name="project" value="LOCAL" />
       <updated>1719590333002</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="plot prevalence">
+      <option name="closed" value="true" />
+      <created>1719628400217</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1719628400217</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
