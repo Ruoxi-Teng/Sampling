@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 df = pd.read_csv("Data/CIP_summary_by_sites.csv")
 df = df.drop(df.columns[[0]],axis=1)
 df['CipRsum_prevalence'] = df['CipRsum']/df['TOTAL']
-df1=pd.read_csv("Data/CIP_summary.csv")
-df1=df1.drop(df1.columns[[0]],axis=1)
+dt=pd.read_csv("Data/CIP_summary.csv")
+dt=dt.drop(dt.columns[[0]],axis=1)
 
 # suppose we only include the sites that are sampled every year
 def preprocess_data(data):
@@ -25,8 +25,11 @@ def preprocess_data(data):
     return filtered_data
 
 
-dt = preprocess_data(df)
-
+df1 = preprocess_data(df)
+dt1 = df1[df1.columns[1:4]].groupby('YEAR').sum().reset_index()
+dt1['CipRsum_prevalence'] = dt1['CipRsum']/dt1['TOTAL']
+# print(df1)
+# print(dt1)
 # check what we get if we use all the sites each year for sampling
 def calculate_treatment_stats_sum(data, prevalence_values):
     results = []
@@ -69,7 +72,7 @@ def generate_multiple_random_samples(df, num_clinics, num_samples, prevalence_va
         subset_df_agg = subset_df.groupby('YEAR').sum().reset_index()
         subset_df_agg['CipRsum_prevalence']=subset_df_agg['CipRsum']/subset_df_agg['TOTAL']
 
-        dt5 = df1.copy()
+        dt5 = dt1.copy()
         dt5['CipRsum_prevalence'] = subset_df_agg['CipRsum_prevalence'].values
 
         treatment_stats = calculate_treatment_stats_sum(dt5, prevalence_values)
@@ -107,14 +110,27 @@ def plot_treatment_paradigms(results, total_stats, num_clinics):
 prevalence_values = np.arange(0, 1.000, 0.002)
 
 # Generate samples
-random_sample_results = generate_multiple_random_samples(dt, num_clinics=5, num_samples=100, prevalence_values=prevalence_values)
+random_sample_results = generate_multiple_random_samples(df1, num_clinics=5, num_samples=100, prevalence_values=prevalence_values)
 
 # Calculate total stats
-total_stats = calculate_treatment_stats_sum(df1, prevalence_values)
+total_stats = calculate_treatment_stats_sum(dt1, prevalence_values)
 
 # Plot results
 plot_5 = plot_treatment_paradigms(random_sample_results['treatment_stats'], total_stats, num_clinics=5)
 
+plot_5.savefig('Figures/Fixed 5 sites.png')
+# Display the plot
+plt.show()
 
+# Generate samples
+random_sample_results_10 = generate_multiple_random_samples(df1, num_clinics=10, num_samples=100, prevalence_values=prevalence_values)
+
+# Calculate total stats
+total_stats_10 = calculate_treatment_stats_sum(dt1, prevalence_values)
+
+# Plot results
+plot_10 = plot_treatment_paradigms(random_sample_results['treatment_stats'], total_stats, num_clinics=10)
+
+plot_10.savefig('Figures/Fixed 10 sites.png')
 # Display the plot
 plt.show()
