@@ -67,7 +67,7 @@ def generate_multiple_random_samples(df, num_clinics, num_samples, prevalence_va
     all_results = []
 
     for i in range(num_samples):
-        np.random.seed(573+i)
+        np.random.seed(573+i*num_clinics)
         subset_df = select_random_clinics(df, num_clinics).drop(columns=['CLINIC'])
         subset_df_agg = subset_df.groupby('YEAR').sum().reset_index()
         subset_df_agg['CipRsum_prevalence']=subset_df_agg['CipRsum']/subset_df_agg['TOTAL']
@@ -107,7 +107,7 @@ def plot_treatment_paradigms(results, total_stats, num_clinics):
 
     return plt.gcf()
 
-prevalence_values = np.arange(0, 1.000, 0.002)
+prevalence_values = np.arange(0, 1.002, 0.002)
 
 # Generate samples
 random_sample_results = generate_multiple_random_samples(df1, num_clinics=5, num_samples=100, prevalence_values=prevalence_values)
@@ -129,7 +129,7 @@ random_sample_results_10 = generate_multiple_random_samples(df1, num_clinics=10,
 total_stats_10 = calculate_treatment_stats_sum(dt1, prevalence_values)
 
 # Plot results
-plot_10 = plot_treatment_paradigms(random_sample_results['treatment_stats'], total_stats, num_clinics=10)
+plot_10 = plot_treatment_paradigms(random_sample_results_10['treatment_stats'], total_stats_10, num_clinics=10)
 
 plot_10.savefig('Figures/Fixed 10 sites.png')
 # Display the plot
