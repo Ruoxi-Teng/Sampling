@@ -12,6 +12,25 @@ dt=pd.read_csv("Data/CIP_summary.csv")
 dt=dt.drop(dt.columns[[0]],axis=1)
 dt['CipRsum_prevalence'] = dt['CipRsum']/dt['TOTAL']
 
+# suppose we only include the sites that are sampled every year
+def preprocess_data(data):
+
+    # Calculate min and max years
+    min_year = data['YEAR'].min()
+    max_year = data['YEAR'].max()
+    total_years = max_year - min_year + 1
+
+    # Filter out sites that are not sampled every year
+    site_counts = data.groupby('CLINIC')['YEAR'].nunique()
+    sites_with_all_years = site_counts[site_counts == total_years].index
+
+    filtered_data = data[data['CLINIC'].isin(sites_with_all_years)]
+
+    return filtered_data
+
+
+df1 = preprocess_data(df)
+dt1 = df1[df1.columns[1:4]].groupby('YEAR').sum().reset_index()
 
 # check what we get if we use all the sites each year for sampling
 def calculate_treatment_stats_sum(data, prevalence_values):
@@ -96,7 +115,7 @@ def plot_treatment_paradigms(results, total_stats, num_clinics):
 prevalence_values = np.arange(0, 1.000, 0.002)
 
 # Generate samples
-random_sample_results = generate_multiple_random_samples(df, num_clinics=5, num_samples=100, prevalence_values=prevalence_values)
+random_sample_results = generate_multiple_random_samples(df1, num_clinics=5, num_samples=100, prevalence_values=prevalence_values)
 
 # Calculate total stats
 total_stats = calculate_treatment_stats_sum(dt, prevalence_values)
@@ -109,7 +128,7 @@ plot_5.savefig('Figures/Random 5 sites.png')
 plt.show()
 
 # Generate samples
-random_sample_results_10 = generate_multiple_random_samples(df, num_clinics=10, num_samples=100, prevalence_values=prevalence_values)
+random_sample_results_10 = generate_multiple_random_samples(df1, num_clinics=10, num_samples=100, prevalence_values=prevalence_values)
 
 # Calculate total stats
 total_stats_10 = calculate_treatment_stats_sum(dt, prevalence_values)

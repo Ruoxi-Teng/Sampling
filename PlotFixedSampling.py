@@ -71,8 +71,8 @@ def generate_multiple_random_samples(df, num_clinics, num_samples, prevalence_va
         subset_df = select_random_clinics(df, num_clinics).drop(columns=['CLINIC'])
         subset_df_agg = subset_df.groupby('YEAR').sum().reset_index()
         subset_df_agg['CipRsum_prevalence']=subset_df_agg['CipRsum']/subset_df_agg['TOTAL']
-
-        dt5 = dt1.copy()
+        # we apply the
+        dt5 = dt.copy()
         dt5['CipRsum_prevalence'] = subset_df_agg['CipRsum_prevalence'].values
 
         treatment_stats = calculate_treatment_stats_sum(dt5, prevalence_values)
@@ -113,7 +113,7 @@ prevalence_values = np.arange(0, 1.002, 0.002)
 random_sample_results = generate_multiple_random_samples(df1, num_clinics=5, num_samples=100, prevalence_values=prevalence_values)
 
 # Calculate total stats
-total_stats = calculate_treatment_stats_sum(dt1, prevalence_values)
+total_stats = calculate_treatment_stats_sum(dt, prevalence_values)
 
 # Plot results
 plot_5 = plot_treatment_paradigms(random_sample_results['treatment_stats'], total_stats, num_clinics=5)
@@ -126,7 +126,7 @@ plt.show()
 random_sample_results_10 = generate_multiple_random_samples(df1, num_clinics=10, num_samples=100, prevalence_values=prevalence_values)
 
 # Calculate total stats
-total_stats_10 = calculate_treatment_stats_sum(dt1, prevalence_values)
+total_stats_10 = calculate_treatment_stats_sum(dt, prevalence_values)
 
 # Plot results
 plot_10 = plot_treatment_paradigms(random_sample_results_10['treatment_stats'], total_stats_10, num_clinics=10)

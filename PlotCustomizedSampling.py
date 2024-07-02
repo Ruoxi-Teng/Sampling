@@ -88,5 +88,6 @@ plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
+plt.savefig('Figures/Customized v.s Uniform.png')
 plt.show()
-plt.savefig('Figures/Customized v.s. Uniform.png')
+
