@@ -91,8 +91,8 @@ def plot_treatment_paradigms(results, total_stats, num_clinics):
                  alpha=0.3)
 
     mean_results = results.groupby('Prevalence')[['FailureToTreatPercentage', 'UnnecessaryUsePercentage']].mean()
-    results.to_csv("Data/fixed_summary.csv")
-    mean_results.to_csv("Data/fixed_summary_mean.csv")
+    # results.to_csv("Data/fixed_summary.csv")
+    # mean_results.to_csv("Data/fixed_summary_mean.csv")
     plt.plot(mean_results['FailureToTreatPercentage'], mean_results['UnnecessaryUsePercentage'], color='red',
              label='Mean of samples')
 
@@ -131,8 +131,8 @@ random_sample_results_10 = generate_multiple_random_samples(df1, num_clinics=10,
 total_stats_10 = calculate_treatment_stats_sum(dt, prevalence_values)
 
 # Plot results
-# plot_10 = plot_treatment_paradigms(random_sample_results_10['treatment_stats'], total_stats_10, num_clinics=10)
+plot_10 = plot_treatment_paradigms(random_sample_results_10['treatment_stats'], total_stats_10, num_clinics=10)
 
-# plot_10.savefig('Figures/Fixed 10 sites.png')
+plot_10.savefig('Figures/Fixed 10 sites.png')
 # Display the plot
-# plt.show()
+plt.show()
