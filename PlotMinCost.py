@@ -1,19 +1,22 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy.stats import beta
+from scipy import stats
 from itertools import combinations
 import numpy as np
+import random
 
 df = pd.read_csv("Data/CIP_summary_by_sites.csv")
-df = df.drop(df.columns[[0]],axis=1)
+df = df.drop(df.columns[[0]], axis=1)
 df['CipRsum_prevalence'] = df['CipRsum']/df['TOTAL']
-dt=pd.read_csv("Data/CIP_summary.csv")
-dt=dt.drop(dt.columns[[0]],axis=1)
+dt = pd.read_csv("Data/CIP_summary.csv")
+dt = dt.drop(dt.columns[[0]], axis=1)
 
 # suppose we only include the sites that are sampled every year
+
 def preprocess_data(data):
 
-    # Calculate min and max years
+
+# Calculate min and max years
     min_year = data['YEAR'].min()
     max_year = data['YEAR'].max()
     total_years = max_year - min_year + 1
@@ -33,8 +36,10 @@ dt1['CipRsum_prevalence'] = dt1['CipRsum']/dt1['TOTAL']
 # print(df1)
 # print(dt1)
 
+
 def calculate_total_cost(data, selected_indices):
-    selected_cost = data.loc[selected_indices, 'sampled_cost'].sum()
+
+    selected_cost = data.loc[selected_indices, 'selected_cost'].sum()
     not_selected_cost = data.loc[~data.index.isin(selected_indices), 'not_selected_cost'].sum()
     return selected_cost + not_selected_cost
 def optimize_site_selection(data, num_sites):
@@ -76,8 +81,33 @@ def update_data_for_chosen_sites(data_2000, data_all_years):
 
     return data_2000
 
-def adaptive_sampling(data, num_sites=10, lambda_val=1, seed=573):
+
+def calculate_selected_cost(alpha, beta, lambda_val=0.5, num_samples=10000, threshold=0.05):
+    # Initialize an array to store costs
+    costs = np.zeros(len(alpha))
+
+    # Handle non-zero alpha values
+    non_zero_mask = alpha != 0
+    non_zero_alpha = alpha[non_zero_mask]
+    non_zero_beta = beta[non_zero_mask]
+    if len(non_zero_alpha) > 0:
+        # Generate samples from the beta distribution for non-zero alpha values
+        samples = np.random.beta(non_zero_alpha, non_zero_beta, size=(num_samples, len(non_zero_alpha)))
+
+        # Calculate cost for each sample
+        sample_costs = np.where(samples < threshold, non_zero_alpha, lambda_val * (1 - non_zero_alpha))
+
+        # Calculate mean cost for each non-zero alpha
+        non_zero_costs = np.mean(sample_costs, axis=0)
+
+        # Assign calculated costs back to the original array
+        costs[non_zero_mask] = non_zero_costs
+
+    return costs
+
+def adaptive_sampling(data, num_sites, seed=573):
     # Sort data by year
+
     data = data.sort_values('YEAR')
     years = data['YEAR'].unique()
 
@@ -85,31 +115,24 @@ def adaptive_sampling(data, num_sites=10, lambda_val=1, seed=573):
     selected_sites_df = pd.DataFrame()
 
     for year in years:
+        random.seed(seed)
         print(f"Processing year: {year}")
 
         # Filter data for the current year
         data_year = data[data['YEAR'] == year].copy()
 
         # Calculate alpha and beta with a small epsilon to avoid zeros
-        epsilon = 1e-10
-        data_year['alpha'] = data_year['CipRsum'] / data_year['TOTAL'] + epsilon
+        data_year['alpha'] = data_year['CipRsum'] / data_year['TOTAL']
         data_year['beta'] = 1 - data_year['alpha']
 
-        # Calculate not_selected_cost
-        np.random.seed(seed + year)
-        n_samples = 10000
-        alpha_values = np.maximum(data_year['alpha'].values, epsilon)
-        beta_values = np.maximum(data_year['beta'].values, epsilon)
-        random_samples = beta.rvs(alpha_values[:, np.newaxis], beta_values[:, np.newaxis],
-                                  size=(len(data_year), n_samples))
-        data_year['not_selected_cost'] = np.mean(random_samples, axis=1)
+        # Calculate not_selected_cost, it is the mean of the beta distribution
+        data_year['not_selected_cost'] = data_year['alpha']
 
         # Calculate sampled_cost
-        data_year['p'] = beta.cdf(0.05, data_year['alpha'], data_year['beta'])
-        data_year['sampled_cost'] = data_year['p'] * data_year['alpha'] + \
-                                    (1 - data_year['p']) * (1 - data_year['alpha']) * lambda_val
-
-
+        data_year['selected_cost'] = calculate_selected_cost(
+            data_year['alpha'].values,
+            data_year['beta'].values
+        )
         # Optimize site selection
         optimize_result = optimize_site_selection(data_year, num_sites)
 
@@ -140,8 +163,8 @@ def adaptive_sampling(data, num_sites=10, lambda_val=1, seed=573):
     return {'results': results, 'selected_sites': selected_sites_df}
 
 # Run adaptive_sampling for different numbers of sites
-result5 = adaptive_sampling(data=df1,num_sites=5, lambda_val=1, seed=573)['selected_sites']
-result10 = adaptive_sampling(data=df1,num_sites=10, lambda_val=1, seed=573)['selected_sites']
+result5 = adaptive_sampling(data=df1, num_sites=5)['selected_sites']
+result10 = adaptive_sampling(data=df1, num_sites=10)['selected_sites']
 
 def calculate_treatment_stats_sum(data, prevalence_values):
     results = []
@@ -162,12 +185,13 @@ def calculate_treatment_stats_sum(data, prevalence_values):
         })
     return pd.DataFrame(results)
 
+
 prevalence_values = np.arange(0, 1.002, 0.002)
-treatment_stats_sum = calculate_treatment_stats_sum(dt1, prevalence_values)
+treatment_stats_sum = calculate_treatment_stats_sum(dt, prevalence_values)
 
 treatment_stats_sum['Sample'] = 'Total'
-result1= calculate_treatment_stats_sum(result5, prevalence_values)
-result2= calculate_treatment_stats_sum(result10, prevalence_values)
+result1 = calculate_treatment_stats_sum(result5, prevalence_values)
+result2 = calculate_treatment_stats_sum(result10, prevalence_values)
 # Add 'Sample' column to results
 result1['Sample'] = "Top 5 sites"
 result2['Sample'] = "Top 10 sites"
@@ -199,5 +223,5 @@ plt.grid(True)
 plt.gca().xaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
 plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
 
+plt.savefig('Figures/Min Cost Strategy lambda = 0.5 threshold = 0.05.png')
 plt.show()
-plt.savefig('Figures/Min Cost Strategy.png')

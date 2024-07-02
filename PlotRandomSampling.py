@@ -136,8 +136,8 @@ random_sample_results_10 = generate_multiple_random_samples(df1, num_clinics=10,
 total_stats_10 = calculate_treatment_stats_sum(dt, prevalence_values)
 
 # Plot results
-# plot_10 = plot_treatment_paradigms(random_sample_results_10['treatment_stats'], total_stats_10, num_clinics=10)
+plot_10 = plot_treatment_paradigms(random_sample_results_10['treatment_stats'], total_stats_10, num_clinics=10)
 
-# plot_10.savefig('Figures/Random 10 sites.png')
+plot_10.savefig('Figures/Random 10 sites.png')
 # Display the plot
-# plt.show()
+plt.show()
