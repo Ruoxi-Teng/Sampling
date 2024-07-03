@@ -82,7 +82,7 @@ def update_data_for_chosen_sites(data_2000, data_all_years):
     return data_2000
 
 
-def calculate_selected_cost(alpha, beta, lambda_val=0.5, num_samples=10000, threshold=0.05):
+def calculate_selected_cost(alpha, beta, lambda_val=1, num_samples=10000, threshold=0.3):
     # Initialize an array to store costs
     costs = np.zeros(len(alpha))
 
@@ -223,5 +223,5 @@ plt.grid(True)
 plt.gca().xaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
 plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
 
-plt.savefig('Figures/Min Cost Strategy lambda = 0.5 threshold = 0.05.png')
+plt.savefig('Figures/Min Cost Strategy lambda = 1 threshold = 0.3.png')
 plt.show()
