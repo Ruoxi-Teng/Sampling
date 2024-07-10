@@ -29,24 +29,40 @@ def calculate_treatment_stats_sum(data, prevalence_values):
     })
 
 
-def select_random_clinics(df, num_clinics, seed):
-    np.random.seed(seed)
-    unique_values = df['CLINIC'].unique()
-    return df[df['CLINIC'].isin(np.random.choice(unique_values, num_clinics, replace=False))]
-
-
 def generate_multiple_random_samples(df, num_clinics, num_samples, prevalence_values):
     all_results = []
+    selected_clinics_data = []
+
     for i in range(num_samples):
-        subset_df = select_random_clinics(df, num_clinics, 573 + i).drop(columns=['CLINIC'])
-        subset_df_agg = subset_df.groupby('YEAR').sum().reset_index()
+        np.random.seed(573 + i)
+        yearly_data = []
+
+        for year in df['YEAR'].unique():
+            year_df = df[df['YEAR'] == year]
+            selected_clinics = np.random.choice(year_df['CLINIC'].unique(), num_clinics, replace=False)
+            subset_df = year_df[year_df['CLINIC'].isin(selected_clinics)]
+            yearly_data.append(subset_df)
+
+            # Store selected clinics information
+            selected_clinics_data.append({
+                'Sample': i + 1,
+                'Year': year,
+                'Selected_Clinics': ', '.join(selected_clinics)
+            })
+
+        subset_df_agg = pd.concat(yearly_data).groupby('YEAR').sum().reset_index()
         subset_df_agg['CipRsum_prevalence'] = subset_df_agg['CipRsum'] / subset_df_agg['TOTAL']
+
         dt5 = dt.copy()
         dt5['CipRsum_prevalence'] = subset_df_agg['CipRsum_prevalence'].values
         treatment_stats = calculate_treatment_stats_sum(dt5, prevalence_values)
         treatment_stats['Sample'] = i + 1
         all_results.append(treatment_stats)
-    return pd.concat(all_results, ignore_index=True)
+
+    # Create a dataframe with selected clinics information
+    selected_clinics_df = pd.DataFrame(selected_clinics_data)
+
+    return pd.concat(all_results, ignore_index=True), selected_clinics_df
 
 
 def calculate_auc(x, y):
@@ -84,10 +100,10 @@ def plot_treatment_paradigms(results, total_stats, num_clinics):
 
 # Load and preprocess data
 df = pd.read_csv("Data/CIP_summary_by_sites.csv")
-df=df.drop(columns=df.columns[0])
+df = df.drop(columns=df.columns[0])
 df['CipRsum_prevalence'] = df['CipRsum'] / df['TOTAL']
 dt = pd.read_csv("Data/CIP_summary.csv")
-dt=dt.drop(columns=dt.columns[0])
+dt = dt.drop(columns=dt.columns[0])
 
 df1 = preprocess_data(df)
 dt1 = df1[df1.columns[1:4]].groupby('YEAR').sum().reset_index()
@@ -99,11 +115,16 @@ total_stats = calculate_treatment_stats_sum(dt, prevalence_values)
 
 # Generate and plot results for 5 and 10 clinics
 for num_clinics in [5, 10]:
-    random_sample_results = generate_multiple_random_samples(df1, num_clinics, 100, prevalence_values)
+    random_sample_results, selected_clinics_df = generate_multiple_random_samples(df1, num_clinics, 100,
+                                                                                  prevalence_values)
     random_sample_results.to_csv(f"Data/random_summary_{num_clinics}.csv", index=False)
     mean_results = random_sample_results.groupby('Prevalence')[
         ['FailureToTreatPercentage', 'UnnecessaryUsePercentage']].mean()
     mean_results.to_csv(f"Data/random_summary_mean_{num_clinics}.csv", index=False)
+
+    # Print the first few rows of the selected clinics dataframe for checking
+    print(f"\nSelected clinics for {num_clinics} clinics (first 10 rows):")
+    print(selected_clinics_df.head(10))
 
     plot = plot_treatment_paradigms(random_sample_results, total_stats, num_clinics)
     plot.savefig(f'Figures/Random {num_clinics} sites.png')

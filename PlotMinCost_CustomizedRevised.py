@@ -225,7 +225,7 @@ def adaptive_sampling_and_plot(df1, prevalence_values, threshold, num_sites_list
 
 
 # Set the threshold and run the analysis
-threshold = 0.2
+threshold = 0.01
 num_sites_list = [5, 10]
 prevalence_values = np.arange(0, 1.002, 0.002)
 
