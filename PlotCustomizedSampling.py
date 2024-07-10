@@ -1,13 +1,14 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-df=pd.read_csv("Data/CIP_summary.csv")
-df=df.drop(df.columns[[0]],axis=1)
-dt=pd.read_csv("Data/CIP_summary_by_sites.csv")
-dt=dt.drop(dt.columns[[0]],axis=1)
-dt['CipRsum_prevalence'] = dt['CipRsum']/dt['TOTAL']
+from scipy.integrate import trapz
 
-# if we use all sites for uniform sampling
+df = pd.read_csv("Data/CIP_summary.csv")
+df = df.drop(df.columns[[0]], axis=1)
+dt = pd.read_csv("Data/CIP_summary_by_sites.csv")
+dt = dt.drop(dt.columns[[0]], axis=1)
+dt['CipRsum_prevalence'] = dt['CipRsum'] / dt['TOTAL']
+
 def calculate_treatment_stats_sum(data, prevalence_values):
     results = []
     total = data['TOTAL'].sum()
@@ -27,8 +28,6 @@ def calculate_treatment_stats_sum(data, prevalence_values):
         })
     return pd.DataFrame(results)
 
-
-# if we use all sites for customized sampling
 def calculate_treatment_stats_new(subset_dt, prevalence_values):
     results_list = []
 
@@ -42,7 +41,6 @@ def calculate_treatment_stats_new(subset_dt, prevalence_values):
 
         tx_stats_selected = tx_stats[['YEAR', 'TOTAL', 'FailureToTreat', 'UnnecessaryUse']]
 
-        # Aggregate by year
         tx_stats_selected = tx_stats_selected.groupby('YEAR').sum().reset_index()
 
         results = {
@@ -58,11 +56,24 @@ def calculate_treatment_stats_new(subset_dt, prevalence_values):
 
     return pd.DataFrame(results_list)
 
+
+def calculate_auc(x, y):
+    # Ensure the data is sorted by x values
+    sorted_data = sorted(zip(x, y))
+    x_sorted, y_sorted = zip(*sorted_data)
+
+    # Calculate AUC
+    auc = trapz(y_sorted, x_sorted)
+
+    # Normalize AUC to be between 0 and 1
+    auc_normalized = auc / (max(x_sorted) * max(y_sorted))
+
+    return auc_normalized
+
 prevalence_values = np.arange(0, 1.000, 0.002)
 treatment_stats_sum = calculate_treatment_stats_sum(df, prevalence_values)
 results_df = calculate_treatment_stats_new(dt, prevalence_values)
 
-# Prepare data for combined plot
 treatment_stats_sum['Sample'] = 'Uniform'
 results_df['Sample'] = 'Customized'
 results_df = results_df.rename(columns={'CutoffValue': 'Prevalence'})
@@ -73,12 +84,13 @@ plot_customized = pd.concat([
 ])
 plot_customized = plot_customized.rename(columns={'Sample': 'Method'})
 
-# Plotting
 plt.figure(figsize=(12, 6))
 
 for method in plot_customized['Method'].unique():
-    data = plot_customized[plot_customized['Method'] == method]
-    plt.plot(data['FailureToTreatPercentage'], data['UnnecessaryUsePercentage'], label=method)
+    data = plot_customized[plot_customized['Method'] == method].sort_values('FailureToTreatPercentage')
+    auc = calculate_auc(data['FailureToTreatPercentage'], data['UnnecessaryUsePercentage'])
+    plt.plot(data['FailureToTreatPercentage'], data['UnnecessaryUsePercentage'],
+             label=f"{method} (AUC: {auc:.4f})")
 
 plt.xlabel('Failure to Treat (%)')
 plt.ylabel('Unnecessary Treatment (%)')
@@ -91,3 +103,16 @@ plt.tight_layout()
 plt.savefig('Figures/Customized v.s Uniform.png')
 plt.show()
 
+# Calculate and print AUC values
+auc_results = []
+for method in plot_customized['Method'].unique():
+    data = plot_customized[plot_customized['Method'] == method].sort_values('FailureToTreatPercentage')
+    auc = calculate_auc(data['FailureToTreatPercentage'], data['UnnecessaryUsePercentage'])
+    auc_results.append({'Method': method, 'AUC': auc})
+
+auc_df = pd.DataFrame(auc_results)
+print("AUC Results:")
+print(auc_df)
+
+# Save AUC results to CSV
+auc_df.to_csv('Data/auc_results_customized_vs_uniform.csv', index=False)

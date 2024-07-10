@@ -4,6 +4,8 @@ from scipy import stats
 from itertools import combinations
 import numpy as np
 import random
+from scipy.interpolate import interp1d
+from scipy.integrate import simpson
 
 df = pd.read_csv("Data/CIP_summary_by_sites.csv")
 df = df.drop(df.columns[[0]], axis=1)
@@ -11,6 +13,37 @@ df['CipRsum_prevalence'] = df['CipRsum']/df['TOTAL']
 dt = pd.read_csv("Data/CIP_summary.csv")
 dt = dt.drop(dt.columns[[0]], axis=1)
 
+
+# first calculate the result using all the sites
+def calculate_treatment_stats_sum(data, prevalence_values):
+    results = []
+    dt_new = dt.copy()
+    data_agg = data.groupby('YEAR').sum().reset_index()
+    data_agg['CipRsum_prevalence'] = data_agg['CipRsum'] / data_agg['TOTAL']
+    dt_new['CipRsum_prevalence'] = data_agg['CipRsum_prevalence'].values
+
+    total = dt_new['TOTAL'].sum()
+
+    for prevalence in prevalence_values:
+        drug_change = (dt_new['CipRsum_prevalence'] >= prevalence).astype(int)
+        failure_to_treat = ((1 - drug_change) * dt_new['CipRsum']).sum()
+        unnecessary_use = (drug_change * (dt_new['TOTAL'] - dt_new['CipRsum'])).sum()
+
+        results.append({
+            'Prevalence': prevalence,
+            'FailureToTreat': failure_to_treat,
+            'UnnecessaryUse': unnecessary_use,
+            'Total': total,
+            'UnnecessaryUsePercentage': unnecessary_use / total,
+            'FailureToTreatPercentage': failure_to_treat / total
+        })
+    return pd.DataFrame(results)
+
+
+prevalence_values = np.arange(0, 1.002, 0.002)
+treatment_stats_sum = calculate_treatment_stats_sum(dt, prevalence_values)
+
+treatment_stats_sum['Sample'] = 'Total'
 # suppose we only include the sites that are sampled every year
 
 def preprocess_data(data):
@@ -82,7 +115,7 @@ def update_data_for_chosen_sites(data_2000, data_all_years):
     return data_2000
 
 
-def calculate_selected_cost(alpha, beta, lambda_val=1, num_samples=10000, threshold=0.3):
+def calculate_selected_cost(alpha, beta, lambda_val=1, num_samples=10000, threshold=0.01):
     # Initialize an array to store costs
     costs = np.zeros(len(alpha))
 
@@ -105,9 +138,24 @@ def calculate_selected_cost(alpha, beta, lambda_val=1, num_samples=10000, thresh
 
     return costs
 
+def calculate_lambda(data, threshold):
+    # Create interpolation function for the curve
+    interp_func = interp1d(data['FailureToTreatPercentage'],
+                           data['UnnecessaryUsePercentage'],
+                           kind='linear')
+
+    # Calculate slope at threshold
+    epsilon = 1e-6  # Small value for numerical differentiation
+    y1 = interp_func(threshold - epsilon)
+    y2 = interp_func(threshold + epsilon)
+    slope = (y2 - y1) / (2 * epsilon)
+
+    # Calculate lambda
+    lambda_val = -1 / slope if slope != 0 else np.inf
+
+    return lambda_val
 def adaptive_sampling(data, num_sites, seed=573):
     # Sort data by year
-
     data = data.sort_values('YEAR')
     years = data['YEAR'].unique()
 
@@ -166,30 +214,7 @@ def adaptive_sampling(data, num_sites, seed=573):
 result5 = adaptive_sampling(data=df1, num_sites=5)['selected_sites']
 result10 = adaptive_sampling(data=df1, num_sites=10)['selected_sites']
 
-def calculate_treatment_stats_sum(data, prevalence_values):
-    results = []
-    total = data['TOTAL'].sum()
 
-    for prevalence in prevalence_values:
-        drug_change = (data['CipRsum_prevalence'] >= prevalence).astype(int)
-        failure_to_treat = ((1 - drug_change) * data['CipRsum']).sum()
-        unnecessary_use = (drug_change * (data['TOTAL'] - data['CipRsum'])).sum()
-
-        results.append({
-            'Prevalence': prevalence,
-            'FailureToTreat': failure_to_treat,
-            'UnnecessaryUse': unnecessary_use,
-            'Total': total,
-            'UnnecessaryUsePercentage': unnecessary_use / total,
-            'FailureToTreatPercentage': failure_to_treat / total
-        })
-    return pd.DataFrame(results)
-
-
-prevalence_values = np.arange(0, 1.002, 0.002)
-treatment_stats_sum = calculate_treatment_stats_sum(dt, prevalence_values)
-
-treatment_stats_sum['Sample'] = 'Total'
 result1 = calculate_treatment_stats_sum(result5, prevalence_values)
 result2 = calculate_treatment_stats_sum(result10, prevalence_values)
 # Add 'Sample' column to results
@@ -205,6 +230,46 @@ plot_cost = pd.concat([
 
 # Rename 'Sample' column to 'Method'
 plot_cost = plot_cost.rename(columns={'Sample': 'Method'})
+
+def calculate_auc(x, y):
+    """Calculate the area under the curve using Simpson's rule."""
+    return simpson(y, x)
+
+def calculate_and_save_auc(plot_cost, threshold):
+    # Group the data by Method
+    grouped = plot_cost.groupby('Method')
+
+    auc_results = []
+
+    for method, data in grouped:
+        # Sort the data by FailureToTreatPercentage
+        data = data.sort_values('FailureToTreatPercentage')
+
+        # Calculate AUC
+        auc = calculate_auc(data['FailureToTreatPercentage'], data['UnnecessaryUsePercentage'])
+
+        auc_results.append({
+            'Method': method,
+            'AUC': auc,
+            'Threshold': threshold
+        })
+
+    # Create a DataFrame from the results
+    auc_df = pd.DataFrame(auc_results)
+
+    # Create the filename with the threshold
+    filename = f'Data/auc_results_total_threshold_{threshold:.2f}.csv'
+
+    # Save to CSV
+    auc_df.to_csv(filename, index=False)
+
+    return auc_df
+
+    # Calculate AUC and save results
+auc_results = calculate_and_save_auc(plot_cost,threshold=0.01)
+
+# Print results
+print(auc_results)
 
 # Create the plot
 plt.figure(figsize=(12, 6))
@@ -223,5 +288,5 @@ plt.grid(True)
 plt.gca().xaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
 plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
 
-plt.savefig('Figures/Min Cost Strategy lambda = 1 threshold = 0.3.png')
+plt.savefig('Figures/Min Cost Strategy for total population threshold = 0.01.png')
 plt.show()

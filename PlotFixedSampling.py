@@ -1,86 +1,60 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.integrate import trapz
 
-df = pd.read_csv("Data/CIP_summary_by_sites.csv")
-df = df.drop(df.columns[[0]],axis=1)
-df['CipRsum_prevalence'] = df['CipRsum']/df['TOTAL']
-dt=pd.read_csv("Data/CIP_summary.csv")
-dt=dt.drop(dt.columns[[0]],axis=1)
 
-# suppose we only include the sites that are sampled every year
 def preprocess_data(data):
-
-    # Calculate min and max years
-    min_year = data['YEAR'].min()
-    max_year = data['YEAR'].max()
+    min_year, max_year = data['YEAR'].min(), data['YEAR'].max()
     total_years = max_year - min_year + 1
-
-    # Filter out sites that are not sampled every year
     site_counts = data.groupby('CLINIC')['YEAR'].nunique()
     sites_with_all_years = site_counts[site_counts == total_years].index
-
-    filtered_data = data[data['CLINIC'].isin(sites_with_all_years)]
-
-    return filtered_data
+    return data[data['CLINIC'].isin(sites_with_all_years)]
 
 
-df1 = preprocess_data(df)
-dt1 = df1[df1.columns[1:4]].groupby('YEAR').sum().reset_index()
-dt1['CipRsum_prevalence'] = dt1['CipRsum']/dt1['TOTAL']
-# print(df1)
-# print(dt1)
-# check what we get if we use all the sites each year for sampling
 def calculate_treatment_stats_sum(data, prevalence_values):
-    results = []
     total = data['TOTAL'].sum()
+    drug_change = (data['CipRsum_prevalence'].values[:, np.newaxis] >= prevalence_values).astype(int)
+    failure_to_treat = ((1 - drug_change) * data['CipRsum'].values[:, np.newaxis]).sum(axis=0)
+    unnecessary_use = (drug_change * (data['TOTAL'].values[:, np.newaxis] - data['CipRsum'].values[:, np.newaxis])).sum(
+        axis=0)
 
-    for prevalence in prevalence_values:
-        drug_change = (data['CipRsum_prevalence'] >= prevalence).astype(int)
-        failure_to_treat = ((1 - drug_change) * data['CipRsum']).sum()
-        unnecessary_use = (drug_change * (data['TOTAL'] - data['CipRsum'])).sum()
-
-        results.append({
-            'Prevalence': prevalence,
-            'FailureToTreat': failure_to_treat,
-            'UnnecessaryUse': unnecessary_use,
-            'Total': total,
-            'UnnecessaryUsePercentage': unnecessary_use / total,
-            'FailureToTreatPercentage': failure_to_treat / total
-        })
-    return pd.DataFrame(results)
-
-prevalence_values = np.arange(0, 1.000, 0.002)
-treatment_stats_sum = calculate_treatment_stats_sum(dt1, prevalence_values)
-
-treatment_stats_sum['Sample'] = 'Total'
+    return pd.DataFrame({
+        'Prevalence': prevalence_values,
+        'FailureToTreat': failure_to_treat,
+        'UnnecessaryUse': unnecessary_use,
+        'Total': total,
+        'UnnecessaryUsePercentage': unnecessary_use / total,
+        'FailureToTreatPercentage': failure_to_treat / total
+    })
 
 
-def select_random_clinics(df, num_clinics):
+def select_random_clinics(df, num_clinics, seed):
+    np.random.seed(seed)
     unique_values = df['CLINIC'].unique()
     selected_values = np.random.choice(unique_values, num_clinics, replace=False)
     return df[df['CLINIC'].isin(selected_values)]
 
 
 def generate_multiple_random_samples(df, num_clinics, num_samples, prevalence_values):
-
     all_results = []
-
     for i in range(num_samples):
-        np.random.seed(573+i*num_clinics)
-        subset_df = select_random_clinics(df, num_clinics).drop(columns=['CLINIC'])
+        subset_df = select_random_clinics(df, num_clinics, 573 + i * num_clinics).drop(columns=['CLINIC'])
         subset_df_agg = subset_df.groupby('YEAR').sum().reset_index()
-        subset_df_agg['CipRsum_prevalence']=subset_df_agg['CipRsum']/subset_df_agg['TOTAL']
-        # we apply the
+        subset_df_agg['CipRsum_prevalence'] = subset_df_agg['CipRsum'] / subset_df_agg['TOTAL']
         dt5 = dt.copy()
         dt5['CipRsum_prevalence'] = subset_df_agg['CipRsum_prevalence'].values
-
         treatment_stats = calculate_treatment_stats_sum(dt5, prevalence_values)
         treatment_stats['Sample'] = i + 1
         all_results.append(treatment_stats)
+    return pd.concat(all_results, ignore_index=True)
 
-    results = pd.concat(all_results, ignore_index=True)
-    return {'prevalence_data': subset_df_agg, 'treatment_stats': results}
+
+def calculate_auc(x, y):
+    sorted_data = sorted(zip(x, y))
+    x_sorted, y_sorted = zip(*sorted_data)
+    auc = trapz(y_sorted, x_sorted)
+    return auc / (max(x_sorted) * max(y_sorted))
 
 
 def plot_treatment_paradigms(results, total_stats, num_clinics):
@@ -91,13 +65,13 @@ def plot_treatment_paradigms(results, total_stats, num_clinics):
                  alpha=0.3)
 
     mean_results = results.groupby('Prevalence')[['FailureToTreatPercentage', 'UnnecessaryUsePercentage']].mean()
-    # results.to_csv("Data/fixed_summary.csv")
-    # mean_results.to_csv("Data/fixed_summary_mean.csv")
+    mean_auc = calculate_auc(mean_results['FailureToTreatPercentage'], mean_results['UnnecessaryUsePercentage'])
     plt.plot(mean_results['FailureToTreatPercentage'], mean_results['UnnecessaryUsePercentage'], color='red',
-             label='Mean of samples')
+             label=f'Mean of samples (AUC: {mean_auc:.4f})')
 
+    total_auc = calculate_auc(total_stats['FailureToTreatPercentage'], total_stats['UnnecessaryUsePercentage'])
     plt.plot(total_stats['FailureToTreatPercentage'], total_stats['UnnecessaryUsePercentage'], color='blue',
-             label='All sites')
+             label=f'All sites (AUC: {total_auc:.4f})')
 
     plt.xlabel('Failure to Treat (%)')
     plt.ylabel('Unnecessary Treatment (%)')
@@ -106,33 +80,26 @@ def plot_treatment_paradigms(results, total_stats, num_clinics):
     plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
     plt.legend()
     plt.grid(True)
-
     return plt.gcf()
 
+
+# Load and preprocess data
+df = pd.read_csv("Data/CIP_summary_by_sites.csv")
+df=df.drop(columns=df.columns[0])
+df['CipRsum_prevalence'] = df['CipRsum'] / df['TOTAL']
+dt = pd.read_csv("Data/CIP_summary.csv")
+dt=dt.drop(columns=dt.columns[0])
+
+df1 = preprocess_data(df)
+dt1 = df1[df1.columns[1:4]].groupby('YEAR').sum().reset_index()
+dt1['CipRsum_prevalence'] = dt1['CipRsum'] / dt1['TOTAL']
+
 prevalence_values = np.arange(0, 1.002, 0.002)
-
-# Generate samples
-random_sample_results = generate_multiple_random_samples(df1, num_clinics=5, num_samples=100, prevalence_values=prevalence_values)
-
-# Calculate total stats
 total_stats = calculate_treatment_stats_sum(dt, prevalence_values)
 
-# Plot results
-plot_5 = plot_treatment_paradigms(random_sample_results['treatment_stats'], total_stats, num_clinics=5)
-
-plot_5.savefig('Figures/Fixed 5 sites.png')
-# Display the plot
-plt.show()
-
-# Generate samples
-random_sample_results_10 = generate_multiple_random_samples(df1, num_clinics=10, num_samples=100, prevalence_values=prevalence_values)
-
-# Calculate total stats
-total_stats_10 = calculate_treatment_stats_sum(dt, prevalence_values)
-
-# Plot results
-plot_10 = plot_treatment_paradigms(random_sample_results_10['treatment_stats'], total_stats_10, num_clinics=10)
-
-plot_10.savefig('Figures/Fixed 10 sites.png')
-# Display the plot
-plt.show()
+# Generate and plot results for 5 and 10 clinics
+for num_clinics in [5, 10]:
+    random_sample_results = generate_multiple_random_samples(df1, num_clinics, 100, prevalence_values)
+    plot = plot_treatment_paradigms(random_sample_results, total_stats, num_clinics)
+    plot.savefig(f'Figures/Fixed {num_clinics} sites.png')
+    plt.show()
