@@ -114,7 +114,7 @@ prevalence_values = np.arange(0, 1.000, 0.002)
 total_stats = calculate_treatment_stats_sum(dt, prevalence_values)
 
 # Generate and plot results for 5 and 10 clinics
-for num_clinics in [5, 10]:
+for num_clinics in [1, 5, 10]:
     random_sample_results, selected_clinics_df = generate_multiple_random_samples(df1, num_clinics, 100,
                                                                                   prevalence_values)
     random_sample_results.to_csv(f"Data/random_summary_{num_clinics}.csv", index=False)
