@@ -3,8 +3,7 @@ import matplotlib.pyplot as plt
 from itertools import combinations
 import numpy as np
 import random
-from scipy.interpolate import interp1d
-from scipy.integrate import trapz
+
 
 # Load and preprocess data
 df = pd.read_csv("Data/CIP_summary_by_sites.csv")
@@ -33,9 +32,7 @@ def calculate_treatment_stats_sum(data, prevalence_values):
         })
     return pd.DataFrame(results)
 
-prevalence_values = np.arange(0, 1.002, 0.002)
-treatment_stats_sum = calculate_treatment_stats_sum(dt, prevalence_values)
-treatment_stats_sum['Sample'] = 'Total'
+
 def preprocess_data(data):
     min_year = data['YEAR'].min()
     max_year = data['YEAR'].max()
@@ -76,26 +73,25 @@ def optimize_site_selection(data, num_sites):
     return {'data': data, 'min_cost': min_cost, 'chosen_sites': chosen_sites}
 
 
-def update_data_for_chosen_sites(data_2000, data_all_years):
-    for _, row in data_2000[data_2000['sites_chosen'] == 1].iterrows():
+def update_data_for_chosen_sites(data_current, data_all_years):
+    for _, row in data_current[data_current['sites_chosen'] == 1].iterrows():
         next_year = row['YEAR'] + 1
         clinic = row['CLINIC']
 
         next_year_data = data_all_years[(data_all_years['YEAR'] == next_year) & (data_all_years['CLINIC'] == clinic)]
 
         if not next_year_data.empty:
-            data_2000.loc[(data_2000['CLINIC'] == clinic) & (data_2000['YEAR'] == row['YEAR']), 'TOTAL'] = \
+            data_current.loc[(data_current['CLINIC'] == clinic) & (data_current['YEAR'] == row['YEAR']), 'TOTAL'] = \
             next_year_data['TOTAL'].values[0]
-            data_2000.loc[(data_2000['CLINIC'] == clinic) & (data_2000['YEAR'] == row['YEAR']), 'CipRsum'] = \
+            data_current.loc[(data_current['CLINIC'] == clinic) & (data_current['YEAR'] == row['YEAR']), 'CipRsum'] = \
             next_year_data['CipRsum'].values[0]
         else:
             print(f"Warning: No data found for clinic {clinic} in year {next_year}")
 
-    return data_2000
+    return data_current
 
 
 def calculate_lambda(data, threshold):
-    # Find the two closest points to the threshold
     data_sorted = data.sort_values('FailureToTreatPercentage')
     idx = np.searchsorted(data_sorted['FailureToTreatPercentage'], threshold)
 
@@ -107,14 +103,26 @@ def calculate_lambda(data, threshold):
     point1 = data_sorted.iloc[idx - 1]
     point2 = data_sorted.iloc[idx]
 
-    # Calculate the slope
-    slope = (point2['UnnecessaryUsePercentage'] - point1['UnnecessaryUsePercentage']) / \
-            (point2['FailureToTreatPercentage'] - point1['FailureToTreatPercentage'])
+    delta_failure = point2['FailureToTreatPercentage'] - point1['FailureToTreatPercentage']
+    delta_unnecessary = point2['UnnecessaryUsePercentage'] - point1['UnnecessaryUsePercentage']
 
-    return -1 / slope if slope != 0 else np.inf
+    if delta_failure == 0:
+        slope = np.inf if delta_unnecessary > 0 else -np.inf if delta_unnecessary < 0 else 0
+    else:
+        slope = delta_unnecessary / delta_failure
+
+    lambda_val = -1 / slope if slope != 0 else np.inf
+
+    # Save the slope for this threshold
+    lambda_results.append({'Threshold': threshold, 'Slope': slope, 'Lambda': lambda_val})
+
+    return lambda_val
 
 
-def calculate_selected_cost(alpha, beta, num_samples=10000, threshold=0.05):
+def calculate_selected_cost(alpha, beta, num_samples=10000, threshold=None):
+    if threshold is None:
+        raise ValueError("Threshold must be provided")
+
     costs = np.zeros(len(alpha))
     lambda_val = calculate_lambda(data=treatment_stats_sum, threshold=threshold)
 
@@ -131,7 +139,7 @@ def calculate_selected_cost(alpha, beta, num_samples=10000, threshold=0.05):
     return costs
 
 
-def adaptive_sampling(data, num_sites, seed=573):
+def adaptive_sampling(data, num_sites, threshold, seed=573):
     data = data.sort_values('YEAR')
     years = data['YEAR'].unique()
 
@@ -148,7 +156,8 @@ def adaptive_sampling(data, num_sites, seed=573):
         data_year['not_selected_cost'] = data_year['alpha']
         data_year['selected_cost'] = calculate_selected_cost(
             data_year['alpha'].values,
-            data_year['beta'].values
+            data_year['beta'].values,
+            threshold=threshold
         )
 
         optimize_result = optimize_site_selection(data_year, num_sites)
@@ -164,55 +173,54 @@ def adaptive_sampling(data, num_sites, seed=573):
         selected_sites_year['CipRsum_prevalence'] = selected_sites_year['CipRsum'] / selected_sites_year['TOTAL']
         selected_sites_df = pd.concat([selected_sites_df, selected_sites_year], ignore_index=True)
 
-        data = data.merge(
-            updated_data[updated_data['sites_chosen'] == 1][['CLINIC', 'YEAR', 'TOTAL', 'CipRsum']],
-            on=['CLINIC', 'YEAR'], how='left', suffixes=('', '_new')
-        )
-        data['TOTAL'] = data['TOTAL_new'].fillna(data['TOTAL'])
-        data['CipRsum'] = data['CipRsum_new'].fillna(data['CipRsum'])
-        data = data.drop(columns=['TOTAL_new', 'CipRsum_new'])
-
     return {'results': results, 'selected_sites': selected_sites_df}
 
 
-def adaptive_sampling_and_plot(df1, prevalence_values, threshold, num_sites_list):
+def calculate_point_for_threshold(data, num_sites, threshold):
+    result = adaptive_sampling(data=data, num_sites=num_sites, threshold=threshold)['selected_sites']
+    dt_new = dt.copy()
+    data_agg = result.groupby('YEAR').sum().reset_index()
+    data_agg['CipRsum_prevalence'] = data_agg['CipRsum'] / data_agg['TOTAL']
+    dt_new['CipRsum_prevalence'] = data_agg['CipRsum_prevalence'].values
+
+    total = result['TOTAL'].sum()
+    cipR_sum = result['CipRsum'].sum()
+
+    drug_change = (result['CipRsum_prevalence'] >= threshold).astype(int)
+    failure_to_treat = ((1 - drug_change) * result['CipRsum']).sum()
+    unnecessary_use = (drug_change * (result['TOTAL'] - result['CipRsum'])).sum()
+
+    return failure_to_treat / total, unnecessary_use / total
+
+
+def adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sites_list):
     treatment_stats_sum = calculate_treatment_stats_sum(dt, prevalence_values)
     treatment_stats_sum['Method'] = 'Total'
 
-    plot_cost = [treatment_stats_sum[['Prevalence', 'UnnecessaryUsePercentage', 'FailureToTreatPercentage', 'Method']]]
+    plot_data = {'Total': treatment_stats_sum[
+        ['Prevalence', 'UnnecessaryUsePercentage', 'FailureToTreatPercentage']].values.tolist()}
 
     for num_sites in num_sites_list:
-        result = adaptive_sampling(data=df1, num_sites=num_sites)['selected_sites']
-        result_stats = calculate_treatment_stats_sum(result, prevalence_values)
-        result_stats['Method'] = f"Top {num_sites} sites"
-        plot_cost.append(result_stats[['Prevalence', 'UnnecessaryUsePercentage', 'FailureToTreatPercentage', 'Method']])
-
-    plot_cost = pd.concat(plot_cost, ignore_index=True)
-
-    def calculate_auc(x, y):
-        # Ensure the data is sorted by x values
-        sorted_data = sorted(zip(x, y))
-        x_sorted, y_sorted = zip(*sorted_data)
-
-        # Calculate AUC using trapezoidal rule
-        auc = trapz(y_sorted, x_sorted)
-
-        # Normalize AUC to be between 0 and 1
-        auc_normalized = auc / (max(x_sorted) * max(y_sorted))
-
-        return auc_normalized
+        plot_data[f"Top {num_sites} sites"] = []
+        for threshold in prevalence_values:
+            failure_to_treat, unnecessary_use = calculate_point_for_threshold(df1, num_sites, threshold)
+            plot_data[f"Top {num_sites} sites"].append([threshold, unnecessary_use, failure_to_treat])
 
     plt.figure(figsize=(12, 6))
 
     auc_results = []
-    for method in plot_cost['Method'].unique():
-        data = plot_cost[plot_cost['Method'] == method].sort_values('FailureToTreatPercentage')
-        auc = calculate_auc(data['FailureToTreatPercentage'], data['UnnecessaryUsePercentage'])
-        auc_results.append({'Method': method, 'AUC': auc})
-        plt.plot(data['FailureToTreatPercentage'], data['UnnecessaryUsePercentage'],
-                 label=f"{method} (AUC: {auc:.4f})")
+    for method, data in plot_data.items():
+        data_sorted = sorted(data, key=lambda x: x[2])  # Sort by FailureToTreatPercentage
+        x = [point[2] for point in data_sorted]
+        y = [point[1] for point in data_sorted]
 
-    plt.title(f"Min Cost Strategy (Threshold: {threshold:.2f})")
+        auc = np.trapz(y, x)
+        auc_normalized = auc / (max(x) * max(y))
+        auc_results.append({'Method': method, 'AUC': auc_normalized})
+
+        plt.plot(x, y, label=f"{method} (AUC: {auc_normalized:.4f})")
+
+    plt.title("Min Cost Strategy (Varying Threshold)")
     plt.xlabel("Failure to Treat (%)")
     plt.ylabel("Unnecessary Treatment (%)")
     plt.legend()
@@ -221,21 +229,31 @@ def adaptive_sampling_and_plot(df1, prevalence_values, threshold, num_sites_list
     plt.gca().xaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
     plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
 
-    plt.savefig(f'Figures/Min Cost Strategy for sampled population threshold = {threshold:.2f}.png')
+    plt.savefig('Figures/Min Cost Strategy for sampled population varying threshold.png')
     plt.show()
 
     auc_df = pd.DataFrame(auc_results)
-    auc_df['Threshold'] = threshold
-    auc_df.to_csv(f'Data/auc_results_sample_threshold_{threshold:.2f}.csv', index=False)
+    auc_df.to_csv('Data/auc_results_sample_varying_threshold.csv', index=False)
 
     return auc_df
 
 
-# Set the threshold and run the analysis
-threshold = 0.01
-num_sites_list = [5, 10]
+# Set the parameters and run the analysis
 prevalence_values = np.arange(0, 1.002, 0.002)
+num_sites_list = [5, 10]
 
-auc_results = adaptive_sampling_and_plot(df1, prevalence_values, threshold, num_sites_list)
+# Calculate treatment_stats_sum before using it in other functions
+treatment_stats_sum = calculate_treatment_stats_sum(dt, prevalence_values)
+treatment_stats_sum['Sample'] = 'Total'
+
+# Initialize lambda_results list
+lambda_results = []
+
+auc_results = adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sites_list)
 
 print(auc_results)
+
+# Print and save lambda results
+lambda_df = pd.DataFrame(lambda_results)
+print(lambda_df)
+lambda_df.to_csv('Data/lambda_results.csv', index=False)
