@@ -183,12 +183,11 @@ def calculate_point_for_threshold(data, num_sites, threshold):
     data_agg['CipRsum_prevalence'] = data_agg['CipRsum'] / data_agg['TOTAL']
     dt_new['CipRsum_prevalence'] = data_agg['CipRsum_prevalence'].values
 
-    total = result['TOTAL'].sum()
-    cipR_sum = result['CipRsum'].sum()
+    total = dt_new['TOTAL'].sum()
 
-    drug_change = (result['CipRsum_prevalence'] >= threshold).astype(int)
-    failure_to_treat = ((1 - drug_change) * result['CipRsum']).sum()
-    unnecessary_use = (drug_change * (result['TOTAL'] - result['CipRsum'])).sum()
+    drug_change = (dt_new['CipRsum_prevalence'] >= threshold).astype(int)
+    failure_to_treat = ((1 - drug_change) * dt_new['CipRsum']).sum()
+    unnecessary_use = (drug_change * (dt_new['TOTAL'] - dt_new['CipRsum'])).sum()
 
     return failure_to_treat / total, unnecessary_use / total
 
