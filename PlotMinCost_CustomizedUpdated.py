@@ -97,8 +97,6 @@ def calculate_lambda(data, threshold):
 
     if idx == 0:
         idx = 1
-    elif idx == len(data_sorted):
-        idx = len(data_sorted) - 1
 
     point1 = data_sorted.iloc[idx - 1]
     point2 = data_sorted.iloc[idx]
@@ -118,13 +116,30 @@ def calculate_lambda(data, threshold):
 
     return lambda_val
 
+def calculate_lambda_old(data, threshold):
+    data_sorted = data.sort_values('FailureToTreatPercentage')
+    idx = np.searchsorted(data_sorted['FailureToTreatPercentage'], threshold)
+
+    if idx == 0:
+        idx = 1
+    elif idx == len(data_sorted):
+        idx = len(data_sorted) - 1
+
+    point1 = data_sorted.iloc[idx - 1]
+    point2 = data_sorted.iloc[idx]
+
+    slope = (point2['UnnecessaryUsePercentage'] - point1['UnnecessaryUsePercentage']) / \
+            (point2['FailureToTreatPercentage'] - point1['FailureToTreatPercentage'])
+
+    return -1 / slope if slope != 0 else np.inf
+
 
 def calculate_selected_cost(alpha, beta, num_samples=10000, threshold=None):
     if threshold is None:
         raise ValueError("Threshold must be provided")
 
     costs = np.zeros(len(alpha))
-    lambda_val = calculate_lambda(data=treatment_stats_sum, threshold=threshold)
+    lambda_val = calculate_lambda_old(data=treatment_stats_sum, threshold=threshold)
 
     non_zero_mask = alpha != 0
     non_zero_alpha = alpha[non_zero_mask]
@@ -179,7 +194,6 @@ def adaptive_sampling(data, num_sites, threshold, seed=573):
 def calculate_point_for_threshold(data, num_sites, threshold):
     result = adaptive_sampling(data=data, num_sites=num_sites, threshold=threshold)['selected_sites']
     total = result['TOTAL'].sum()
-    cipR_sum = result['CipRsum'].sum()
 
     drug_change = (result['CipRsum_prevalence'] >= threshold).astype(int)
     failure_to_treat = ((1 - drug_change) * result['CipRsum']).sum()
@@ -188,7 +202,7 @@ def calculate_point_for_threshold(data, num_sites, threshold):
     return failure_to_treat / total, unnecessary_use / total
 
 
-def adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sites_list):
+def adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sites_list,threshold_values):
     treatment_stats_sum = calculate_treatment_stats_sum(dt, prevalence_values)
     treatment_stats_sum['Method'] = 'Total'
 
@@ -197,7 +211,7 @@ def adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sit
 
     for num_sites in num_sites_list:
         plot_data[f"Top {num_sites} sites"] = []
-        for threshold in prevalence_values:
+        for threshold in threshold_values:
             failure_to_treat, unnecessary_use = calculate_point_for_threshold(df1, num_sites, threshold)
             plot_data[f"Top {num_sites} sites"].append([threshold, unnecessary_use, failure_to_treat])
 
@@ -236,7 +250,7 @@ def adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sit
 # Set the parameters and run the analysis
 prevalence_values = np.arange(0, 1.002, 0.002)
 num_sites_list = [5, 10]
-
+threshold_values = np.arange(0,0.16,0.004) #to be adjusted
 # Calculate treatment_stats_sum before using it in other functions
 treatment_stats_sum = calculate_treatment_stats_sum(dt, prevalence_values)
 treatment_stats_sum['Sample'] = 'Total'
@@ -244,7 +258,7 @@ treatment_stats_sum['Sample'] = 'Total'
 # Initialize lambda_results list
 lambda_results = []
 
-auc_results = adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sites_list)
+auc_results = adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sites_list,threshold_values)
 
 print(auc_results)
 
