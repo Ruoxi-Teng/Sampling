@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b3022391-1393-4eca-8ec3-894acee0cf72" name="Changes" comment="update" />
+    <list default="true" id="b3022391-1393-4eca-8ec3-894acee0cf72" name="Changes" comment="update">
+      <change afterPath="$PROJECT_DIR$/TestLambda.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -32,26 +35,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.DataCleaning.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PlotCustomizedSampling.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PlotFixedSampling.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PlotMinCost.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PlotMinCostRevised.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PlotMinCost_Customized.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PlotMinCost_CustomizedRevised.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PlotMinCost_updated.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PlotMonCost_CustomizedRevised.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PlotPrevalence.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PlotRandomSampling.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/tengr/PycharmProjects&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.DataCleaning.executor": "Run",
+    "Python.PlotCustomizedSampling.executor": "Run",
+    "Python.PlotFixedSampling.executor": "Run",
+    "Python.PlotMinCost.executor": "Run",
+    "Python.PlotMinCostRevised.executor": "Run",
+    "Python.PlotMinCost_Customized.executor": "Run",
+    "Python.PlotMinCost_CustomizedRevised.executor": "Run",
+    "Python.PlotMinCost_updated.executor": "Run",
+    "Python.PlotMonCost_CustomizedRevised.executor": "Run",
+    "Python.PlotPrevalence.executor": "Run",
+    "Python.PlotRandomSampling.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Users/tengr/Downloads/Desktop"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\tengr\Downloads\Desktop" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\tengr\PycharmProjects\Sampling\Data" />
       <recent name="C:\Users\tengr\PycharmProjects\Sampling" />
@@ -225,7 +231,15 @@
       <option name="project" value="LOCAL" />
       <updated>1720933606274</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="update">
+      <option name="closed" value="true" />
+      <created>1720934461265</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1720934461265</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
