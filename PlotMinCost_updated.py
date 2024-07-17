@@ -110,13 +110,20 @@ def calculate_lambda(data, threshold):
 
     return lambda_value
 
+def calculate_lambda_fitting(data,threshold):
+    if threshold<=0.16:
+        slope=-241.31644717*threshold**2*3+87.2796778*threshold*2-12.25339056
+    else:
+        slope= 0
+    lambda_value = -1 / slope if slope != 0 else np.inf
+    return lambda_value
 
 def calculate_selected_cost(alpha, beta, num_samples=10000, threshold=None):
     if threshold is None:
         raise ValueError("Threshold must be provided")
 
     costs = np.zeros(len(alpha))
-    lambda_val = calculate_lambda(data=treatment_stats_sum, threshold=threshold)
+    lambda_val = calculate_lambda_fitting(data=treatment_stats_sum, threshold=threshold)
 
     non_zero_mask = alpha != 0
     non_zero_alpha = alpha[non_zero_mask]
@@ -227,35 +234,6 @@ def adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sit
 
     return auc_df
 
-def calculate_lambda_and_save(data, thresholds):
-    results = []
-    for threshold in thresholds:
-        data_sorted = data.sort_values('FailureToTreatPercentage')
-        idx = np.searchsorted(data_sorted['FailureToTreatPercentage'], threshold)
-
-        if idx == 0:
-            idx = 1
-        elif idx == len(data_sorted):
-            idx = len(data_sorted) - 1
-
-        point1 = data_sorted.iloc[idx - 1]
-        point2 = data_sorted.iloc[idx]
-
-        slope = (point2['UnnecessaryUsePercentage'] - point1['UnnecessaryUsePercentage']) / \
-                (point2['FailureToTreatPercentage'] - point1['FailureToTreatPercentage'])
-
-        lambda_value = -1 / slope if slope != 0 else np.inf
-
-        results.append({
-            'Threshold': threshold,
-            'Slope': slope,
-            'Lambda': lambda_value
-        })
-
-    results_df = pd.DataFrame(results)
-    results_df.to_csv('Data/lambda_results.csv', index=False)
-    return results_df
-
 # Set the parameters and run the analysis
 prevalence_values = np.arange(0, 1.002, 0.002)
 num_sites_list = [5, 10]
@@ -263,9 +241,8 @@ num_sites_list = [5, 10]
 # Calculate treatment_stats_sum before using it in other functions
 treatment_stats_sum = calculate_treatment_stats_sum(dt, prevalence_values)
 treatment_stats_sum['Sample'] = 'Total'
-threshold_values = np.arange(0.002,0.36,0.01) #to be adjusted
+threshold_values = np.arange(0.002,1,0.01) #to be adjusted
 treatment_stats_sum.to_csv('Data/sample_curve_results.csv',index=False)
 
 auc_results = adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sites_list,threshold_values)
-lambda_results = calculate_lambda_and_save(treatment_stats_sum, threshold_values)
 print(auc_results)

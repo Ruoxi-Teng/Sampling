@@ -254,7 +254,7 @@ def calculate_lambda_and_save(data, thresholds):
 # Set the parameters and run the analysis
 prevalence_values = np.arange(0, 1.002, 0.002)
 num_sites_list = [5, 10]
-threshold_values = np.arange(0.002,0.36,0.01) #to be adjusted
+threshold_values = np.arange(0.002,1,0.01) #to be adjusted
 # Calculate treatment_stats_sum before using it in other functions
 treatment_stats_sum = calculate_treatment_stats_sum(dt, prevalence_values)
 treatment_stats_sum['Sample'] = 'Total'
