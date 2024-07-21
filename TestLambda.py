@@ -220,7 +220,7 @@ def calculate_lambda_and_save_fitting(data, thresholds):
     results_df.to_csv('Data/lambda_results_fitting.csv', index=False)
     return results_df
 
-threshold_values = np.arange(0, 1.002, 0.002)
+threshold_values = np.arange(0, 0.36, 0.002)
 lambda_results_fitting = calculate_lambda_and_save_fitting(treatment_stats_sum, threshold_values)
 # Create and save lambda results
 lambda_df_fitting = pd.DataFrame(lambda_results_fitting)
