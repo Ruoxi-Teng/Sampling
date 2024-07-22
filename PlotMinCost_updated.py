@@ -207,7 +207,7 @@ def adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sit
             plot_data[f"Top {num_sites} sites"].append([threshold, unnecessary_use, failure_to_treat])
             results.append({
                 'Site number': num_sites,
-                'Prevalence': threshold_values,
+                'Prevalence': threshold,
                 'Total': total,
                 'UnnecessaryUsePercentage': unnecessary_use / total,
                 'FailureToTreatPercentage': failure_to_treat / total

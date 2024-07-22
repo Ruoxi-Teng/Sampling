@@ -204,7 +204,7 @@ def adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sit
             plot_data[f"Top {num_sites} sites"].append([threshold, unnecessary_use, failure_to_treat])
             results.append({
             'Site number': num_sites,
-            'Prevalence': threshold_values,
+            'Prevalence': threshold,
             'Total': total,
             'UnnecessaryUsePercentage': unnecessary_use / total,
             'FailureToTreatPercentage': failure_to_treat / total
@@ -246,36 +246,6 @@ def adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sit
     auc_df.to_csv('Data/auc_results_sample_varying_threshold.csv', index=False)
 
     return auc_df
-
-def calculate_lambda_and_save(data, thresholds):
-    results = []
-    for threshold in thresholds:
-        data_sorted = data.sort_values('FailureToTreatPercentage')
-        idx = np.searchsorted(data_sorted['FailureToTreatPercentage'], threshold)
-
-        if idx == 0:
-            idx = 1
-        elif idx == len(data_sorted):
-            idx = len(data_sorted) - 1
-
-        point1 = data_sorted.iloc[idx - 1]
-        point2 = data_sorted.iloc[idx]
-
-        slope = (point2['UnnecessaryUsePercentage'] - point1['UnnecessaryUsePercentage']) / \
-                (point2['FailureToTreatPercentage'] - point1['FailureToTreatPercentage'])
-
-        lambda_value = -1 / slope if slope != 0 else np.inf
-
-        results.append({
-            'Threshold': threshold,
-            'Slope': slope,
-            'Lambda': lambda_value
-        })
-
-    results_df = pd.DataFrame(results)
-    results_df.to_csv('Data/lambda_results.csv', index=False)
-    return results_df
-
 # Set the parameters and run the analysis
 prevalence_values = np.arange(0, 1.002, 0.002)
 num_sites_list = [5, 10]
@@ -286,6 +256,6 @@ treatment_stats_sum['Sample'] = 'Total'
 
 
 auc_results = adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sites_list,threshold_values)
-lambda_results = calculate_lambda_and_save(treatment_stats_sum, threshold_values)
+
 print(auc_results)
 
