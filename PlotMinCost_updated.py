@@ -259,3 +259,4 @@ treatment_stats_sum.to_csv('Data/sample_curve_results.csv',index=False)
 
 auc_results = adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sites_list,threshold_values)
 print(auc_results)
+
