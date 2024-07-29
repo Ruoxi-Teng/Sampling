@@ -4,7 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b3022391-1393-4eca-8ec3-894acee0cf72" name="Changes" comment="update" />
+    <list default="true" id="b3022391-1393-4eca-8ec3-894acee0cf72" name="Changes" comment="update">
+      <change afterPath="$PROJECT_DIR$/TestLambda_New.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TestSampling.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CreatePrevalence.py" beforeDir="false" afterPath="$PROJECT_DIR$/CreatePrevalence.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/lambda_results.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/lambda_results.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/lambda_results_fitting.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/lambda_results_fitting.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/random_summary_1.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/random_summary_1.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/random_summary_10.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/random_summary_10.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/random_summary_5.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/random_summary_5.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/random_summary_mean_1.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/random_summary_mean_1.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/random_summary_mean_5.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/random_summary_mean_5.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PlotMinCost.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/PlotMinCost_Customized.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/PlotMinCost_CustomizedRevised.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/prevalence_data.csv" beforeDir="false" afterPath="$PROJECT_DIR$/prevalence_data.csv" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -32,28 +48,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.DataCleaning.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PlotCustomizedSampling.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PlotFixedSampling.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PlotMinCost.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PlotMinCostRevised.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PlotMinCost_Customized.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PlotMinCost_CustomizedRevised.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PlotMinCost_CustomizedUpdated.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PlotMinCost_updated.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PlotMonCost_CustomizedRevised.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PlotPrevalence.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PlotRandomSampling.executor&quot;: &quot;Run&quot;,
-    &quot;Python.TestLambda.executor&quot;: &quot;Run&quot;,
-    &quot;Python.TestMinCost.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/tengr/Downloads/Desktop&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.CreatePrevalence.executor": "Run",
+    "Python.DataCleaning.executor": "Run",
+    "Python.PlotCustomizedSampling.executor": "Run",
+    "Python.PlotFixedSampling.executor": "Run",
+    "Python.PlotMinCost.executor": "Run",
+    "Python.PlotMinCostRevised.executor": "Run",
+    "Python.PlotMinCost_Customized.executor": "Run",
+    "Python.PlotMinCost_CustomizedRevised.executor": "Run",
+    "Python.PlotMinCost_CustomizedUpdated.executor": "Run",
+    "Python.PlotMinCost_updated.executor": "Run",
+    "Python.PlotMonCost_CustomizedRevised.executor": "Run",
+    "Python.PlotPrevalence.executor": "Run",
+    "Python.PlotRandomSampling.executor": "Run",
+    "Python.TestLambda.executor": "Run",
+    "Python.TestLambda_New.executor": "Run",
+    "Python.TestMinCost.executor": "Run",
+    "Python.TestSampling.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Users/tengr/Downloads/Desktop"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\tengr\Downloads\Desktop" />
@@ -327,7 +346,15 @@
       <option name="project" value="LOCAL" />
       <updated>1722222607872</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="update">
+      <option name="closed" value="true" />
+      <created>1722224085045</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1722224085045</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
