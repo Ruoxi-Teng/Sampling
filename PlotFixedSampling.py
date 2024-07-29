@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import trapz
-
+from scipy import interpolate
 
 def preprocess_data(data):
     min_year, max_year = data['YEAR'].min(), data['YEAR'].max()
@@ -68,30 +68,53 @@ def calculate_auc(x, y):
 
 
 def plot_treatment_paradigms(results, total_stats, num_clinics):
-    plt.figure(figsize=(12, 6))
+    plt.figure(figsize=(12, 6),dpi=700)
+
+    # Define common x-axis (FailureToTreatPercentage) for interpolation
+    x_common = np.linspace(results['FailureToTreatPercentage'].min(),
+                           results['FailureToTreatPercentage'].max(),
+                           1000)
+
+    interpolated_data = []
+
     for sample in results['Sample'].unique():
         sample_data = results[results['Sample'] == sample]
-        plt.plot(sample_data['FailureToTreatPercentage'], sample_data['UnnecessaryUsePercentage'], color='gold',
-                 alpha=0.3)
+        # Remove duplicates
+        sample_data = sample_data.drop_duplicates(subset='FailureToTreatPercentage')
 
-    mean_results = results.groupby('Prevalence')[['FailureToTreatPercentage', 'UnnecessaryUsePercentage']].mean()
-    mean_auc = calculate_auc(mean_results['FailureToTreatPercentage'], mean_results['UnnecessaryUsePercentage'])
-    plt.plot(mean_results['FailureToTreatPercentage'], mean_results['UnnecessaryUsePercentage'], color='red',
+        # Sort the data by FailureToTreatPercentage
+        sample_data = sample_data.sort_values('FailureToTreatPercentage')
+        # Interpolate
+        f = interpolate.interp1d(sample_data['FailureToTreatPercentage'],
+                                 sample_data['UnnecessaryUsePercentage'],
+                                 kind='linear', fill_value='extrapolate')
+        y_interp = f(x_common)
+
+        interpolated_data.append(y_interp)
+
+        plt.plot(x_common, y_interp, color='gold', alpha=0.01, linewidth=0.7)
+
+        # Calculate mean of interpolated data
+    y_mean = np.mean(interpolated_data, axis=0)
+
+    # Calculate AUC for mean curve
+    mean_auc = calculate_auc(x_common, y_mean)
+
+    plt.plot(x_common, y_mean, color='red',
              label=f'Mean of samples (AUC: {mean_auc:.4f})')
-
     total_auc = calculate_auc(total_stats['FailureToTreatPercentage'], total_stats['UnnecessaryUsePercentage'])
     plt.plot(total_stats['FailureToTreatPercentage'], total_stats['UnnecessaryUsePercentage'], color='blue',
              label=f'All sites (AUC: {total_auc:.4f})')
 
     plt.xlabel('Failure to Treat (%)')
     plt.ylabel('Unnecessary Treatment (%)')
+    # plt.yscale('exp')
     plt.title(f'Treatment paradigms under different cutoff value (2000-2022): Fixed {num_clinics} sites samples')
     plt.gca().xaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
     plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
     plt.legend()
     plt.grid(True)
     return plt.gcf()
-
 
 # Load and preprocess data
 df = pd.read_csv("Data/CIP_summary_by_sites.csv")
@@ -109,7 +132,7 @@ total_stats = calculate_treatment_stats_sum(dt, prevalence_values)
 
 # Generate and plot results for 5 and 10 clinics
 for num_clinics in [1, 5, 10]:
-    random_sample_results, selected_clinics_df = generate_multiple_random_samples(df1, num_clinics, 100,
+    random_sample_results, selected_clinics_df = generate_multiple_random_samples(df1, num_clinics, 1500,
                                                                                   prevalence_values)
     random_sample_results.to_csv(f"Data/random_summary_{num_clinics}.csv", index=False)
     mean_results = random_sample_results.groupby('Prevalence')[

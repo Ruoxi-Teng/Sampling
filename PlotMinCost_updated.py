@@ -254,7 +254,7 @@ num_sites_list = [5, 10]
 # Calculate treatment_stats_sum before using it in other functions
 treatment_stats_sum = calculate_treatment_stats_sum(dt, prevalence_values)
 treatment_stats_sum['Sample'] = 'Total'
-threshold_values = np.arange(0,0.16,0.002) #to be adjusted
+threshold_values = np.arange(0,1.01,0.01) #to be adjusted
 treatment_stats_sum.to_csv('Data/sample_curve_results.csv',index=False)
 
 auc_results = adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sites_list,threshold_values)

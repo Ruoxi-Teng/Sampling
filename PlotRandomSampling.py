@@ -73,11 +73,11 @@ def calculate_auc(x, y):
 
 
 def plot_treatment_paradigms(results, total_stats, num_clinics):
-    plt.figure(figsize=(12, 6))
+    plt.figure(figsize=(12, 6),dpi=500)
     for sample in results['Sample'].unique():
         sample_data = results[results['Sample'] == sample]
         plt.plot(sample_data['FailureToTreatPercentage'], sample_data['UnnecessaryUsePercentage'], color='gold',
-                 alpha=0.3)
+                 alpha=0.01)
 
     mean_results = results.groupby('Prevalence')[['FailureToTreatPercentage', 'UnnecessaryUsePercentage']].mean()
     mean_auc = calculate_auc(mean_results['FailureToTreatPercentage'], mean_results['UnnecessaryUsePercentage'])
@@ -115,7 +115,7 @@ total_stats = calculate_treatment_stats_sum(dt, prevalence_values)
 
 # Generate and plot results for 5 and 10 clinics
 for num_clinics in [1, 5, 10]:
-    random_sample_results, selected_clinics_df = generate_multiple_random_samples(df1, num_clinics, 100,
+    random_sample_results, selected_clinics_df = generate_multiple_random_samples(df1, num_clinics, 1500,
                                                                                   prevalence_values)
     random_sample_results.to_csv(f"Data/random_summary_{num_clinics}.csv", index=False)
     mean_results = random_sample_results.groupby('Prevalence')[
