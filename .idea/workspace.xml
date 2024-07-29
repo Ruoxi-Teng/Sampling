@@ -4,29 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b3022391-1393-4eca-8ec3-894acee0cf72" name="Changes" comment="update">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/All_Selected_Sites_Population.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/All_Selected_Sites_Population.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/PrevalenceWithUandFinPopulation.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/PrevalenceWithUandFinPopulation.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/auc_results_sample_varying_threshold.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/auc_results_sample_varying_threshold.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/random_summary_1.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/random_summary_1.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/random_summary_10.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/random_summary_10.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/random_summary_5.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/random_summary_5.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/random_summary_mean_1.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/random_summary_mean_1.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/random_summary_mean_10.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/random_summary_mean_10.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/random_summary_mean_5.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/random_summary_mean_5.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Figures/Fixed 1 sites.png" beforeDir="false" afterPath="$PROJECT_DIR$/Figures/Fixed 1 sites.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Figures/Fixed 10 sites.png" beforeDir="false" afterPath="$PROJECT_DIR$/Figures/Fixed 10 sites.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Figures/Fixed 5 sites.png" beforeDir="false" afterPath="$PROJECT_DIR$/Figures/Fixed 5 sites.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Figures/Min Cost Strategy for total population varying threshold.png" beforeDir="false" afterPath="$PROJECT_DIR$/Figures/Min Cost Strategy for total population varying threshold.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Figures/Random 1 sites.png" beforeDir="false" afterPath="$PROJECT_DIR$/Figures/Random 1 sites.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Figures/Random 10 sites.png" beforeDir="false" afterPath="$PROJECT_DIR$/Figures/Random 10 sites.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Figures/Random 5 sites.png" beforeDir="false" afterPath="$PROJECT_DIR$/Figures/Random 5 sites.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PlotFixedSampling.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotFixedSampling.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PlotMinCost_updated.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotMinCost_updated.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PlotRandomSampling.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotRandomSampling.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TestMinCost.py" beforeDir="false" afterPath="$PROJECT_DIR$/TestMinCost.py" afterDir="false" />
-    </list>
+    <list default="true" id="b3022391-1393-4eca-8ec3-894acee0cf72" name="Changes" comment="update" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -341,7 +319,15 @@
       <option name="project" value="LOCAL" />
       <updated>1721615383737</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="update">
+      <option name="closed" value="true" />
+      <created>1722222607872</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1722222607872</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
