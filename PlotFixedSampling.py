@@ -137,7 +137,7 @@ for num_clinics in [1, 5, 10]:
     random_sample_results.to_csv(f"Data/random_summary_{num_clinics}.csv", index=False)
     mean_results = random_sample_results.groupby('Prevalence')[
         ['FailureToTreatPercentage', 'UnnecessaryUsePercentage']].mean()
-    mean_results.to_csv(f"Data/random_summary_mean_{num_clinics}.csv", index=False)
+    mean_results.to_csv(f"Data/fixed_summary_mean_{num_clinics}.csv", index=False)
 
     # Print the first 10 rows of the selected clinics dataframe for checking
     print(f"\nSelected clinics for {num_clinics} clinics (first 10 rows):")
