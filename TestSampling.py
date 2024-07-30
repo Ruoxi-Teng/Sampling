@@ -34,12 +34,23 @@ def generate_multiple_random_samples(df, num_clinics, num_samples, prevalence_va
     selected_clinics_data = []
 
     for i in range(num_samples):
-        np.random.seed(573 + i * num_clinics)
-        unique_values = df['CLINIC'].unique()
-        selected_clinics = np.random.choice(unique_values, num_clinics, replace=False)
+        np.random.seed(573 + i)
+        yearly_data = []
 
-        subset_df = df[df['CLINIC'].isin(selected_clinics)].drop(columns=['CLINIC'])
-        subset_df_agg = subset_df.groupby('YEAR').sum().reset_index()
+        for year in df['YEAR'].unique():
+            year_df = df[df['YEAR'] == year]
+            selected_clinics = np.random.choice(year_df['CLINIC'].unique(), num_clinics, replace=False)
+            subset_df = year_df[year_df['CLINIC'].isin(selected_clinics)]
+            yearly_data.append(subset_df)
+
+            # Store selected clinics information
+            selected_clinics_data.append({
+                'Sample': i + 1,
+                'Year': year,
+                'Selected_Clinics': ', '.join(selected_clinics)
+            })
+
+        subset_df_agg = pd.concat(yearly_data).groupby('YEAR').sum().reset_index()
         subset_df_agg['CipRsum_prevalence'] = subset_df_agg['CipRsum'] / subset_df_agg['TOTAL']
 
         dt5 = dt.copy()
@@ -49,14 +60,11 @@ def generate_multiple_random_samples(df, num_clinics, num_samples, prevalence_va
         for _, row in treatment_stats.iterrows():
             results_dict[row['Prevalence']].append({
                 'FailureToTreatPercentage': row['FailureToTreatPercentage'],
-                'UnnecessaryUsePercentage': row['UnnecessaryUsePercentage']
+                'UnnecessaryUsePercentage': row['UnnecessaryUsePercentage'],
+                'Sample': i + 1
             })
 
-        selected_clinics_data.append({
-            'Sample': i + 1,
-            'Selected_Clinics': ', '.join(selected_clinics)
-        })
-
+    # Create a dataframe with selected clinics information
     selected_clinics_df = pd.DataFrame(selected_clinics_data)
 
     return results_dict, selected_clinics_df
