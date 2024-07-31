@@ -114,7 +114,7 @@ def calculate_lambda_fitting(threshold):
         slope=-241.31644717*threshold**2*3+87.2796778*threshold*2-12.25339056
     else:
         slope= 0
-    lambda_value = -1 / slope if slope != 0 else np.inf
+    lambda_value = -1 * slope if slope != 0 else np.inf
     return lambda_value
 
 

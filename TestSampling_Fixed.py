@@ -122,8 +122,8 @@ df1 = preprocess_data(df)
 dt1 = df1[df1.columns[1:4]].groupby('YEAR').sum().reset_index()
 dt1['CipRsum_prevalence'] = dt1['CipRsum'] / dt1['TOTAL']
 
-prevalence_values = np.arange(0, 1.002, 0.002)
-total_stats = calculate_treatment_stats_sum(dt, prevalence_values)
+prevalence_values = np.arange(0.02, 0.08, 0.02)
+total_stats = calculate_treatment_stats_sum(dt, np.arange(0, 1.002, 0.002))
 
 # Generate and plot results for 5 and 10 clinics
 for num_clinics in [1, 5, 10]:
