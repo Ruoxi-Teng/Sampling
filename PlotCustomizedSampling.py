@@ -10,23 +10,32 @@ dt = dt.drop(dt.columns[[0]], axis=1)
 dt['CipRsum_prevalence'] = dt['CipRsum'] / dt['TOTAL']
 
 def calculate_treatment_stats_sum(data, prevalence_values):
-    results = []
     total = data['TOTAL'].sum()
 
-    for prevalence in prevalence_values:
-        drug_change = (data['CipRsum_prevalence'] >= prevalence).astype(int)
-        failure_to_treat = ((1 - drug_change) * data['CipRsum']).sum()
-        unnecessary_use = (drug_change * (data['TOTAL'] - data['CipRsum'])).sum()
+    # Initialize arrays to store results
+    failure_to_treat = np.zeros(len(prevalence_values))
+    unnecessary_use = np.zeros(len(prevalence_values))
 
-        results.append({
-            'Prevalence': prevalence,
-            'FailureToTreat': failure_to_treat,
-            'UnnecessaryUse': unnecessary_use,
-            'Total': total,
-            'UnnecessaryUsePercentage': unnecessary_use / total,
-            'FailureToTreatPercentage': failure_to_treat / total
-        })
-    return pd.DataFrame(results)
+    for i, prevalence_value in enumerate(prevalence_values):
+        drug_changed = False
+        for _, row in data.iterrows():
+            if not drug_changed and row['CipRsum_prevalence'] >= prevalence_value:
+                drug_changed = True
+
+            if drug_changed:
+                unnecessary_use[i] += row['TOTAL'] - row['CipRsum']
+            else:
+                failure_to_treat[i] += row['CipRsum']
+
+    return pd.DataFrame({
+        'Prevalence': prevalence_values,
+        'FailureToTreat': failure_to_treat,
+        'UnnecessaryUse': unnecessary_use,
+        'Total': total,
+        'UnnecessaryUsePercentage': unnecessary_use / total,
+        'FailureToTreatPercentage': failure_to_treat / total
+    })
+
 
 def calculate_treatment_stats_new(subset_dt, prevalence_values):
     results_list = []
@@ -34,18 +43,25 @@ def calculate_treatment_stats_new(subset_dt, prevalence_values):
     for prevalence_value in prevalence_values:
         tx_stats = subset_dt.copy()
 
-        tx_stats['DrugChange'] = (tx_stats['CipRsum_prevalence'] >= prevalence_value).astype(int)
-        tx_stats['FailureToTreat'] = tx_stats.apply(lambda row: 0 if row['DrugChange'] == 1 else row['CipRsum'], axis=1)
+        # Initialize DrugChange column
+        tx_stats['DrugChange'] = False
+
+        # Apply the drug change logic for each site
+        for site in tx_stats['CLINIC'].unique():
+            site_data = tx_stats[tx_stats['CLINIC'] == site]
+            switch_year = site_data[site_data['CipRsum_prevalence'] >= prevalence_value]['YEAR'].min()
+
+            if pd.notnull(switch_year):
+                tx_stats.loc[(tx_stats['CLINIC'] == site) & (tx_stats['YEAR'] >= switch_year), 'DrugChange'] = True
+
+        # Calculate FailureToTreat and UnnecessaryUse
+        tx_stats['FailureToTreat'] = tx_stats.apply(lambda row: 0 if row['DrugChange'] else row['CipRsum'], axis=1)
         tx_stats['UnnecessaryUse'] = tx_stats.apply(
-            lambda row: row['TOTAL'] - row['CipRsum'] if row['DrugChange'] == 1 else 0, axis=1)
-
-        tx_stats_selected = tx_stats[['YEAR', 'TOTAL', 'FailureToTreat', 'UnnecessaryUse']]
-
-        tx_stats_selected = tx_stats_selected.groupby('YEAR').sum().reset_index()
+            lambda row: row['TOTAL'] - row['CipRsum'] if row['DrugChange'] else 0, axis=1)
 
         results = {
-            'FailureToTreat': tx_stats_selected['FailureToTreat'].sum(),
-            'UnnecessaryUse': tx_stats_selected['UnnecessaryUse'].sum(),
+            'FailureToTreat': tx_stats['FailureToTreat'].sum(),
+            'UnnecessaryUse': tx_stats['UnnecessaryUse'].sum(),
             'Total': tx_stats['TOTAL'].sum(),
             'CutoffValue': prevalence_value
         }
@@ -55,7 +71,6 @@ def calculate_treatment_stats_new(subset_dt, prevalence_values):
         results_list.append(results)
 
     return pd.DataFrame(results_list)
-
 
 def calculate_auc(x, y):
     # Ensure the data is sorted by x values
@@ -70,27 +85,18 @@ def calculate_auc(x, y):
 
     return auc_normalized
 
-prevalence_values = np.arange(0, 1.000, 0.002)
+prevalence_values = np.arange(0, 1.002, 0.002)
 treatment_stats_sum = calculate_treatment_stats_sum(df, prevalence_values)
 results_df = calculate_treatment_stats_new(dt, prevalence_values)
+print(treatment_stats_sum)
 
-treatment_stats_sum['Sample'] = 'Uniform'
-results_df['Sample'] = 'Customized'
-results_df = results_df.rename(columns={'CutoffValue': 'Prevalence'})
+total_auc = calculate_auc(treatment_stats_sum['FailureToTreatPercentage'], treatment_stats_sum['UnnecessaryUsePercentage'])
+plt.plot(treatment_stats_sum['FailureToTreatPercentage'], treatment_stats_sum['UnnecessaryUsePercentage'], color='blue',
+             label=f'All sites (AUC: {total_auc:.4f})')
 
-plot_customized = pd.concat([
-    treatment_stats_sum[['Prevalence', 'UnnecessaryUsePercentage', 'FailureToTreatPercentage', 'Sample']],
-    results_df[['Prevalence', 'UnnecessaryUsePercentage', 'FailureToTreatPercentage', 'Sample']]
-])
-plot_customized = plot_customized.rename(columns={'Sample': 'Method'})
-
-plt.figure(figsize=(12, 6))
-
-for method in plot_customized['Method'].unique():
-    data = plot_customized[plot_customized['Method'] == method].sort_values('FailureToTreatPercentage')
-    auc = calculate_auc(data['FailureToTreatPercentage'], data['UnnecessaryUsePercentage'])
-    plt.plot(data['FailureToTreatPercentage'], data['UnnecessaryUsePercentage'],
-             label=f"{method} (AUC: {auc:.4f})")
+customized_auc = calculate_auc(results_df['FailureToTreatPercentage'], results_df['UnnecessaryUsePercentage'])
+plt.plot(results_df['FailureToTreatPercentage'], results_df['UnnecessaryUsePercentage'], color='red',
+             label=f'Customized All sites (AUC: {customized_auc:.4f})')
 
 plt.xlabel('Failure to Treat (%)')
 plt.ylabel('Unnecessary Treatment (%)')
@@ -102,17 +108,3 @@ plt.grid(True)
 plt.tight_layout()
 plt.savefig('Figures/Customized v.s Uniform.png')
 plt.show()
-
-# Calculate and print AUC values
-auc_results = []
-for method in plot_customized['Method'].unique():
-    data = plot_customized[plot_customized['Method'] == method].sort_values('FailureToTreatPercentage')
-    auc = calculate_auc(data['FailureToTreatPercentage'], data['UnnecessaryUsePercentage'])
-    auc_results.append({'Method': method, 'AUC': auc})
-
-auc_df = pd.DataFrame(auc_results)
-print("AUC Results:")
-print(auc_df)
-
-# Save AUC results to CSV
-auc_df.to_csv('Data/auc_results_customized_vs_uniform.csv', index=False)

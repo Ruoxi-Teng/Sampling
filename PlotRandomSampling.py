@@ -14,10 +14,21 @@ def preprocess_data(data):
 
 def calculate_treatment_stats_sum(data, prevalence_values):
     total = data['TOTAL'].sum()
-    drug_change = (data['CipRsum_prevalence'].values[:, np.newaxis] >= prevalence_values).astype(int)
-    failure_to_treat = ((1 - drug_change) * data['CipRsum'].values[:, np.newaxis]).sum(axis=0)
-    unnecessary_use = (drug_change * (data['TOTAL'].values[:, np.newaxis] - data['CipRsum'].values[:, np.newaxis])).sum(
-        axis=0)
+
+    # Initialize arrays to store results
+    failure_to_treat = np.zeros(len(prevalence_values))
+    unnecessary_use = np.zeros(len(prevalence_values))
+
+    for i, prevalence_value in enumerate(prevalence_values):
+        drug_changed = False
+        for _, row in data.iterrows():
+            if not drug_changed and row['CipRsum_prevalence'] >= prevalence_value:
+                drug_changed = True
+
+            if drug_changed:
+                unnecessary_use[i] += row['TOTAL'] - row['CipRsum']
+            else:
+                failure_to_treat[i] += row['CipRsum']
 
     return pd.DataFrame({
         'Prevalence': prevalence_values,

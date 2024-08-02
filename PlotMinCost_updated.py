@@ -17,13 +17,23 @@ def calculate_treatment_stats_sum(data, prevalence_values):
     results = []
     total = data['TOTAL'].sum()
 
-    for prevalence in prevalence_values:
-        drug_change = (data['CipRsum_prevalence'] >= prevalence).astype(int)
-        failure_to_treat = ((1 - drug_change) * data['CipRsum']).sum()
-        unnecessary_use = (drug_change * (data['TOTAL'] - data['CipRsum'])).sum()
+    # Initialize arrays to store results
+    failure_to_treat = np.zeros(len(prevalence_values))
+    unnecessary_use = np.zeros(len(prevalence_values))
+
+    for i, prevalence_value in enumerate(prevalence_values):
+        drug_changed = False
+        for _, row in data.iterrows():
+            if not drug_changed and row['CipRsum_prevalence'] >= prevalence_value:
+                drug_changed = True
+
+            if drug_changed:
+                unnecessary_use[i] += row['TOTAL'] - row['CipRsum']
+            else:
+                failure_to_treat[i] += row['CipRsum']
 
         results.append({
-            'Prevalence': prevalence,
+            'Prevalence': prevalence_values,
             'FailureToTreat': failure_to_treat,
             'UnnecessaryUse': unnecessary_use,
             'Total': total,
@@ -105,7 +115,7 @@ def calculate_lambda(data, threshold):
     slope = (point2['UnnecessaryUsePercentage'] - point1['UnnecessaryUsePercentage']) / \
             (point2['FailureToTreatPercentage'] - point1['FailureToTreatPercentage'])
 
-    lambda_value = -1 / slope if slope != 0 else np.inf
+    lambda_value = -1 * slope
 
     return lambda_value
 
@@ -114,7 +124,7 @@ def calculate_lambda_fitting(threshold):
         slope=-241.31644717*threshold**2*3+87.2796778*threshold*2-12.25339056
     else:
         slope= 0
-    lambda_value = -1 * slope if slope != 0 else np.inf
+    lambda_value = -1 * slope
     return lambda_value
 
 def calculate_selected_cost(alpha, beta, num_samples=10000, threshold=None):
