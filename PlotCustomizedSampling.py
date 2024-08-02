@@ -34,7 +34,7 @@ def calculate_treatment_stats_sum(data, prevalence_values):
         'Total': total,
         'UnnecessaryUsePercentage': unnecessary_use / total,
         'FailureToTreatPercentage': failure_to_treat / total
-    })
+        })
 
 
 def calculate_treatment_stats_new(subset_dt, prevalence_values):
@@ -88,8 +88,8 @@ def calculate_auc(x, y):
 prevalence_values = np.arange(0, 1.002, 0.002)
 treatment_stats_sum = calculate_treatment_stats_sum(df, prevalence_values)
 results_df = calculate_treatment_stats_new(dt, prevalence_values)
-print(treatment_stats_sum)
 
+plt.figure(figsize=(12, 6))
 total_auc = calculate_auc(treatment_stats_sum['FailureToTreatPercentage'], treatment_stats_sum['UnnecessaryUsePercentage'])
 plt.plot(treatment_stats_sum['FailureToTreatPercentage'], treatment_stats_sum['UnnecessaryUsePercentage'], color='blue',
              label=f'All sites (AUC: {total_auc:.4f})')

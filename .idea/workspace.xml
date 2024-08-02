@@ -6,25 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="b3022391-1393-4eca-8ec3-894acee0cf72" name="Changes" comment="update">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/auc_results_customized_vs_uniform.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/auc_results_customized_vs_uniform.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/fixed_dots_summary_1.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/fixed_dots_summary_1.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/fixed_dots_summary_10.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/fixed_dots_summary_10.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/fixed_dots_summary_5.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/fixed_dots_summary_5.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/fixed_dots_summary_mean_1.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/fixed_dots_summary_mean_1.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/fixed_dots_summary_mean_10.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/fixed_dots_summary_mean_10.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/fixed_dots_summary_mean_5.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/fixed_dots_summary_mean_5.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/fitting_results.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/fitting_results.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Data/fixed_summary_1.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/fixed_summary_1.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Data/fixed_summary_10.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/fixed_summary_10.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Data/fixed_summary_5.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/fixed_summary_5.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Data/fixed_summary_mean_1.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/fixed_summary_mean_1.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Data/fixed_summary_mean_10.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/fixed_summary_mean_10.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Data/fixed_summary_mean_5.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/fixed_summary_mean_5.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/random_dots_summary_1.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/random_dots_summary_1.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/random_dots_summary_10.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/random_dots_summary_10.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/random_dots_summary_5.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/random_dots_summary_5.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/random_dots_summary_mean_1.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/random_dots_summary_mean_1.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/random_dots_summary_mean_10.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/random_dots_summary_mean_10.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/random_dots_summary_mean_5.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/random_dots_summary_mean_5.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Data/random_summary_mean_1.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/random_summary_mean_1.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Data/random_summary_mean_10.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/random_summary_mean_10.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Data/random_summary_mean_5.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/random_summary_mean_5.csv" afterDir="false" />
@@ -41,12 +29,10 @@
       <change beforePath="$PROJECT_DIR$/Figures/Random 10 sites.png" beforeDir="false" afterPath="$PROJECT_DIR$/Figures/Random 10 sites.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Figures/Random 5 sites dots.png" beforeDir="false" afterPath="$PROJECT_DIR$/Figures/Random 5 sites dots.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Figures/Random 5 sites.png" beforeDir="false" afterPath="$PROJECT_DIR$/Figures/Random 5 sites.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/model_fitting_comparison.png" beforeDir="false" afterPath="$PROJECT_DIR$/Figures/model_fitting_comparison.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PlotCustomizedSampling.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotCustomizedSampling.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PlotFixedSampling.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotFixedSampling.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PlotMinCost_CustomizedUpdated.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotMinCost_CustomizedUpdated.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PlotMinCost_updated.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotMinCost_updated.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PlotRandomSampling.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotRandomSampling.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TestLambda.py" beforeDir="false" afterPath="$PROJECT_DIR$/TestLambda.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TestLambda_New.py" beforeDir="false" afterPath="$PROJECT_DIR$/TestLambda_New.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TestSampling.py" beforeDir="false" afterPath="$PROJECT_DIR$/TestSampling.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TestSampling_Fixed.py" beforeDir="false" afterPath="$PROJECT_DIR$/TestSampling_Fixed.py" afterDir="false" />
     </list>
@@ -424,7 +410,15 @@
       <option name="project" value="LOCAL" />
       <updated>1722388553439</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="update">
+      <option name="closed" value="true" />
+      <created>1722566593461</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1722566593461</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

@@ -37,7 +37,7 @@ def calculate_treatment_stats_sum(data, prevalence_values):
         'Total': total,
         'UnnecessaryUsePercentage': unnecessary_use / total,
         'FailureToTreatPercentage': failure_to_treat / total
-    })
+        })
 
 
 def generate_multiple_random_samples(df, num_clinics, num_samples, prevalence_values):
@@ -82,12 +82,11 @@ def plot_treatment_paradigms(results, total_stats, num_clinics):
     plt.figure(figsize=(12, 6))
     for sample in results['Sample'].unique():
         sample_data = results[results['Sample'] == sample]
-        plt.plot(sample_data['FailureToTreatPercentage'], sample_data['UnnecessaryUsePercentage'], color='gold',
-                 alpha=0.3)
+        plt.scatter(sample_data['FailureToTreatPercentage'], sample_data['UnnecessaryUsePercentage'], color='grey', alpha=0.1, s=10)
 
     mean_results = results.groupby('Prevalence')[['FailureToTreatPercentage', 'UnnecessaryUsePercentage']].mean()
     mean_auc = calculate_auc(mean_results['FailureToTreatPercentage'], mean_results['UnnecessaryUsePercentage'])
-    plt.plot(mean_results['FailureToTreatPercentage'], mean_results['UnnecessaryUsePercentage'], color='red',
+    plt.scatter(mean_results['FailureToTreatPercentage'], mean_results['UnnecessaryUsePercentage'], color='red', alpha=0.1, s=10,
              label=f'Mean of samples (AUC: {mean_auc:.4f})')
 
     total_auc = calculate_auc(total_stats['FailureToTreatPercentage'], total_stats['UnnecessaryUsePercentage'])
@@ -120,7 +119,7 @@ total_stats = calculate_treatment_stats_sum(dt, prevalence_values)
 
 # Generate and plot results for 5 and 10 clinics
 for num_clinics in [1, 5, 10]:
-    random_sample_results, selected_clinics_df = generate_multiple_random_samples(df1, num_clinics, 100,
+    random_sample_results, selected_clinics_df = generate_multiple_random_samples(df1, num_clinics, 1500,
                                                                                   prevalence_values)
     random_sample_results.to_csv(f"Data/fixed_summary_{num_clinics}.csv", index=False)
     mean_results = random_sample_results.groupby('Prevalence')[
@@ -132,5 +131,5 @@ for num_clinics in [1, 5, 10]:
     print(selected_clinics_df.head(10))
 
     plot = plot_treatment_paradigms(random_sample_results, total_stats, num_clinics)
-    plot.savefig(f'Figures/Fixed {num_clinics} sites.png')
+    plot.savefig(f'Figures/Fixed {num_clinics} sites dots.png')
     plt.show()

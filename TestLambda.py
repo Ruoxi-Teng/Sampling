@@ -12,16 +12,25 @@ dt = pd.read_csv("Data/CIP_summary.csv")
 dt = dt.drop(dt.columns[[0]], axis=1)
 
 def calculate_treatment_stats_sum(data, prevalence_values):
-    results = []
     total = data['TOTAL'].sum()
+    results = []
+    # Initialize arrays to store results
+    failure_to_treat = np.zeros(len(prevalence_values))
+    unnecessary_use = np.zeros(len(prevalence_values))
 
-    for prevalence in prevalence_values:
-        drug_change = (data['CipRsum_prevalence'] >= prevalence).astype(int)
-        failure_to_treat = ((1 - drug_change) * data['CipRsum']).sum()
-        unnecessary_use = (drug_change * (data['TOTAL'] - data['CipRsum'])).sum()
+    for i, prevalence_value in enumerate(prevalence_values):
+        drug_changed = False
+        for _, row in data.iterrows():
+            if not drug_changed and row['CipRsum_prevalence'] >= prevalence_value:
+                drug_changed = True
 
-        results.append({
-            'Prevalence': prevalence,
+            if drug_changed:
+                unnecessary_use[i] += row['TOTAL'] - row['CipRsum']
+            else:
+                failure_to_treat[i] += row['CipRsum']
+
+    results.append({
+            'Prevalence': prevalence_values,
             'FailureToTreat': failure_to_treat,
             'UnnecessaryUse': unnecessary_use,
             'Total': total,
