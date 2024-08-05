@@ -121,7 +121,7 @@ def calculate_lambda(data, threshold):
 
 def calculate_lambda_fitting(threshold):
     if threshold<=0.16:
-        slope=-241.31644717*threshold**2*3+87.2796778*threshold*2-12.25339056
+        slope=-262.36534061*threshold**2*3+ 92.36681857*threshold*2-12.51689277
     else:
         slope= 0
     lambda_value = -1 * slope
@@ -258,13 +258,13 @@ def adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sit
     return auc_df
 
 # Set the parameters and run the analysis
-prevalence_values = np.arange(0, 1.002, 0.002)
+prevalence_values = np.arange(0, 1.02, 0.02)
 num_sites_list = [5, 10]
 
 # Calculate treatment_stats_sum before using it in other functions
 treatment_stats_sum = calculate_treatment_stats_sum(dt, prevalence_values)
 treatment_stats_sum['Sample'] = 'Total'
-threshold_values = np.arange(0, 1.002, 0.002) #to be adjusted
+threshold_values = np.arange(0, 1.02, 0.02) #to be adjusted
 treatment_stats_sum.to_csv('Data/sample_curve_results.csv',index=False)
 
 auc_results = adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sites_list,threshold_values)
