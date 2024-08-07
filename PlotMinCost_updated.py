@@ -5,6 +5,7 @@ import numpy as np
 import random
 
 
+
 # Load and preprocess data
 df = pd.read_csv("Data/CIP_summary_by_sites.csv")
 df = df.drop(df.columns[[0]], axis=1)
@@ -14,7 +15,6 @@ dt = dt.drop(dt.columns[[0]], axis=1)
 
 
 def calculate_treatment_stats_sum(data, prevalence_values):
-    results = []
     total = data['TOTAL'].sum()
 
     # Initialize arrays to store results
@@ -32,15 +32,16 @@ def calculate_treatment_stats_sum(data, prevalence_values):
             else:
                 failure_to_treat[i] += row['CipRsum']
 
-        results.append({
-            'Prevalence': prevalence_values,
-            'FailureToTreat': failure_to_treat,
-            'UnnecessaryUse': unnecessary_use,
-            'Total': total,
-            'UnnecessaryUsePercentage': unnecessary_use / total,
-            'FailureToTreatPercentage': failure_to_treat / total
+    return pd.DataFrame({
+        'Prevalence': prevalence_values,
+        'FailureToTreat': failure_to_treat,
+        'UnnecessaryUse': unnecessary_use,
+        'Total': total,
+        'UnnecessaryUsePercentage': unnecessary_use / total,
+        'FailureToTreatPercentage': failure_to_treat / total
         })
-    return pd.DataFrame(results)
+
+
 
 
 def preprocess_data(data):
@@ -187,26 +188,38 @@ def adaptive_sampling(data, num_sites, threshold, seed=573):
 
 def calculate_point_for_threshold(data, num_sites, threshold):
     result = adaptive_sampling(data=data, num_sites=num_sites, threshold=threshold)['selected_sites']
-    dt_new = dt.copy()
-    data_agg = result.groupby('YEAR').sum().reset_index()
-    data_agg['CipRsum_prevalence'] = data_agg['CipRsum'] / data_agg['TOTAL']
-    dt_new['CipRsum_prevalence'] = data_agg['CipRsum_prevalence'].values
 
-    total = dt_new['TOTAL'].sum()
+    total = df1['TOTAL'].sum()
+    failure_to_treat = 0
+    unnecessary_use = 0
+    drug_changed = False
 
-    drug_change = (dt_new['CipRsum_prevalence'] >= threshold).astype(int)
-    failure_to_treat = ((1 - drug_change) * dt_new['CipRsum']).sum()
-    unnecessary_use = (drug_change * (dt_new['TOTAL'] - dt_new['CipRsum'])).sum()
+    for _, row in result.iterrows():
+        if not drug_changed and row['CipRsum_prevalence'] >= threshold:
+            drug_changed = True
 
-    return failure_to_treat / total, unnecessary_use / total, total, result
+        if drug_changed:
+            unnecessary_use += row['TOTAL'] - row['CipRsum']
+        else:
+            failure_to_treat += row['CipRsum']
 
+    return failure_to_treat, unnecessary_use, total, result
 
-def adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sites_list, threshold_values):
-    treatment_stats_sum = calculate_treatment_stats_sum(dt, prevalence_values)
+def calculate_auc(data):
+    data_sorted = sorted(data, key=lambda data: data[2])  # Sort by FailureToTreatPercentage
+    x = [point[2] for point in data_sorted]
+    y = [point[1] for point in data_sorted]
+
+    auc = np.trapz(y, x)
+    auc_normalized = auc / (max(x) * max(y))
+    return auc_normalized
+
+def adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sites_list,threshold_values):
+    treatment_stats_sum = calculate_treatment_stats_sum(df, prevalence_values)
     treatment_stats_sum['Method'] = 'Total'
+
     plot_data = {'Total': treatment_stats_sum[
         ['Prevalence', 'UnnecessaryUsePercentage', 'FailureToTreatPercentage']].values.tolist()}
-
     results = []
     all_selected_sites = pd.DataFrame()
     for num_sites in num_sites_list:
@@ -216,18 +229,22 @@ def adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sit
             failure_to_treat, unnecessary_use, total, selected_sites = calculate_point_for_threshold(df1, num_sites, threshold)
             plot_data[f"Top {num_sites} sites"].append([threshold, unnecessary_use, failure_to_treat])
             results.append({
-                'Site number': num_sites,
-                'Prevalence': threshold,
-                'Total': total,
-                'UnnecessaryUsePercentage': unnecessary_use,
-                'FailureToTreatPercentage': failure_to_treat
+            'Site number': num_sites,
+            'Prevalence': threshold,
+            'Total': total,
+            'UnnecessaryUsePercentage': unnecessary_use,
+            'FailureToTreatPercentage': failure_to_treat
             })
             selected_sites['NumSites'] = num_sites
             all_selected_sites = pd.concat([all_selected_sites, selected_sites], ignore_index=True)
-    plt.figure(figsize=(12, 6))
-    results = pd.DataFrame(results)
-    results.to_csv("Data/PrevalenceWithUandFinPopulation.csv", index=False)
-    all_selected_sites.to_csv("Data/All_Selected_Sites_Population.csv", index=False)
+
+        plt.figure(figsize=(12, 6))
+        results_df = pd.DataFrame(results)
+        results_df.to_csv("Data/PrevalenceWithUandFinSample.csv", index=False)
+
+        # Save all selected sites information to a single CSV
+        all_selected_sites.to_csv("Data/All_Selected_Sites_Sample.csv", index=False)
+
     auc_results = []
     for method, data in plot_data.items():
         data_sorted = sorted(data, key=lambda x: x[2])  # Sort by FailureToTreatPercentage
@@ -239,6 +256,7 @@ def adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sit
         auc_results.append({'Method': method, 'AUC': auc_normalized})
 
         plt.plot(x, y, label=f"{method} (AUC: {auc_normalized:.4f})")
+        plt.plot(x, y, label=f"{method} ")
 
     plt.title("Min Cost Strategy (Varying Threshold)")
     plt.xlabel("Failure to Treat (%)")
@@ -256,16 +274,12 @@ def adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sit
     auc_df.to_csv('Data/auc_results_sample_varying_threshold.csv', index=False)
 
     return auc_df
-
 # Set the parameters and run the analysis
 prevalence_values = np.arange(0, 1.02, 0.02)
-num_sites_list = [5, 10]
+num_sites_list = [5,10]
 
 # Calculate treatment_stats_sum before using it in other functions
-treatment_stats_sum = calculate_treatment_stats_sum(dt, prevalence_values)
-treatment_stats_sum['Sample'] = 'Total'
 threshold_values = np.arange(0, 1.02, 0.02) #to be adjusted
-treatment_stats_sum.to_csv('Data/sample_curve_results.csv',index=False)
 
 auc_results = adaptive_sampling_and_plot_varying_threshold(df1, prevalence_values, num_sites_list,threshold_values)
 print(auc_results)
