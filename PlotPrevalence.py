@@ -9,7 +9,7 @@ for column in df.columns[2:]:  # Exclude the 'Year' column
 
 plt.xlabel('Year')
 plt.ylabel('Prevalence')
-plt.title('Antimicrobial resistance changing by Year')
+plt.title('Antimicrobial resistance trend by Year (2000-2022)')
 plt.legend()
 plt.grid(True)
 
@@ -21,7 +21,7 @@ plt.tight_layout()
 
 
 # Save the plot as 'prevalence.png' in the 'figure' folder
-plt.savefig('Figures/prevalence.png')
+plt.savefig('Figures/All Antimicrobial prevalence.png')
 
 # Show the plot
 plt.show()

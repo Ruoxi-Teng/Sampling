@@ -120,9 +120,9 @@ df1 = preprocess_data(df)
 dt1 = df1[df1.columns[1:4]].groupby('YEAR').sum().reset_index()
 dt1['CipRsum_prevalence'] = dt1['CipRsum'] / dt1['TOTAL']
 
-prevalence_values = np.arange(0, 1.002, 0.002)
+prevalence_values = np.arange(0, 1.02, 0.02)
 total_stats = calculate_treatment_stats_sum(dt, prevalence_values)
-
+print(total_stats[['FailureToTreatPercentage', 'UnnecessaryUsePercentage']].value_counts().reset_index(name='count'))
 # Generate and plot results for 5 and 10 clinics
 for num_clinics in [1, 5, 10]:
     random_sample_results, selected_clinics_df = generate_multiple_random_samples(df1, num_clinics, 1500,
@@ -139,3 +139,4 @@ for num_clinics in [1, 5, 10]:
     plot = plot_treatment_paradigms(random_sample_results, total_stats, num_clinics)
     plot.savefig(f'Figures/Random {num_clinics} sites dots.png')
     plt.show()
+

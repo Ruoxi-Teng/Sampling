@@ -29,12 +29,12 @@ dt3 = dt2.copy()
 
 # Sum of each prevalence when includes certain drug
 # Rough method
-dt3['TetRsum'] = dt3.filter(like='TetR').sum(axis=1)
-dt3['PenRsum'] = dt3.filter(like='PenR').sum(axis=1)
-dt3['AziRsum'] = dt3.filter(like='AziR').sum(axis=1)
-dt3['CipRsum'] = dt3.filter(like='CipR').sum(axis=1)
-dt3['CfxRsum'] = dt3.filter(like='CfxR').sum(axis=1)
-dt3['CroRsum'] = dt3.filter(like='CroR').sum(axis=1)
+dt3['TetR_Sum'] = dt3.filter(like='TetR').sum(axis=1)
+dt3['PenR_Sum'] = dt3.filter(like='PenR').sum(axis=1)
+dt3['AziR_Sum'] = dt3.filter(like='AziR').sum(axis=1)
+dt3['CipR_Sum'] = dt3.filter(like='CipR').sum(axis=1)
+dt3['CfxR_Sum'] = dt3.filter(like='CfxR').sum(axis=1)
+dt3['CroR_Sum'] = dt3.filter(like='CroR').sum(axis=1)
 
 # Calculate prevalence
 for col in dt3.columns[2:]:  # Start from the third column
@@ -42,14 +42,14 @@ for col in dt3.columns[2:]:  # Start from the third column
     dt3[new_col_name] = dt3[col] / dt3.iloc[:, 1]  # Divide by the second column (index 1)
 
 # Select specific columns
-dt4 = dt3[["YEAR", "TetRsum_prevalence", "PenRsum_prevalence", "AziRsum_prevalence",
-           "CipRsum_prevalence", "CfxRsum_prevalence", "CroRsum_prevalence"]]
+dt4 = dt3[["YEAR", "TetR_Sum_prevalence", "PenR_Sum_prevalence", "AziR_Sum_prevalence",
+           "CipR_Sum_prevalence", "CfxR_Sum_prevalence", "CroR_Sum_prevalence"]]
 
 # Rename columns
 dt4.columns = ["Year", "TET", "PEN", "AZI", "CIP", "CFX", "CRO"]
 
 # Select specific columns
-dt5 = dt3[["YEAR", "TOTAL", "CipRsum", "CipRsum_prevalence"]]
+dt5 = dt3[["YEAR", "TOTAL", "CipR_Sum", "CipR_Sum_prevalence"]]
 
 # generate by sites data
 # Drop the first column
@@ -72,10 +72,10 @@ dt_by_year_sites = dt_by_year_sites.drop('CLINIC', axis=1)
 
 # Sum across anti-resistance
 for resistance in ['TetR', 'PenR', 'AziR', 'CipR', 'CfxR', 'CroR']:
-    dt_by_year_sites[f'{resistance}sum'] = dt_by_year_sites.filter(like=resistance).sum(axis=1)
+    dt_by_year_sites[f'{resistance}_Sum'] = dt_by_year_sites.filter(like=resistance).sum(axis=1)
 
 # Select the columns we are interested in
-columns_of_interest = ['YEAR', 'TOTAL', 'TetRsum', 'PenRsum', 'AziRsum', 'CipRsum', 'CfxRsum', 'CroRsum']
+columns_of_interest = ['YEAR', 'TOTAL', 'TetR_Sum', 'PenR_Sum', 'AziR_Sum', 'CipR_Sum', 'CfxR_Sum', 'CroR_Sum']
 dt_by_year_sites = dt_by_year_sites[columns_of_interest]
 
 # Add clinic column back
@@ -85,7 +85,7 @@ dt_by_year_sites = pd.concat([clinic, dt_by_year_sites], axis=1)
 processed_data_by_sites = dt_by_year_sites.copy()
 
 # Create dt_by_year_sites_cip
-dt_by_year_sites_cip = dt_by_year_sites[['CLINIC', 'YEAR', 'TOTAL', 'CipRsum']]
+dt_by_year_sites_cip = dt_by_year_sites[['CLINIC', 'YEAR', 'TOTAL', 'CipR_Sum']]
 
 # print(dt_by_year_sites_cip)
 

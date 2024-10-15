@@ -3,12 +3,26 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import trapz
 
-df = pd.read_csv("Data/CIP_summary.csv")
-df = df.drop(df.columns[[0]], axis=1)
-dt = pd.read_csv("Data/CIP_summary_by_sites.csv")
-dt = dt.drop(dt.columns[[0]], axis=1)
-dt['CipRsum_prevalence'] = dt['CipRsum'] / dt['TOTAL']
+# Load and preprocess data
+df = pd.read_csv("Data/CIP_summary_by_sites.csv")
+df = df.drop(columns=df.columns[0])
+df['CipR_Sum_prevalence'] = df['CipR_Sum'] / df['TOTAL']
+dt = pd.read_csv("Data/CIP_summary.csv")
+dt = dt.drop(columns=dt.columns[0])
 
+def preprocess_data(data):
+    min_year, max_year = data['YEAR'].min(), data['YEAR'].max()
+    total_years = max_year - min_year + 1
+    site_counts = data.groupby('CLINIC')['YEAR'].nunique()
+    sites_with_all_years = site_counts[site_counts == total_years].index
+    return data[data['CLINIC'].isin(sites_with_all_years)]
+
+
+df1 = preprocess_data(df)
+dt1 = df1[df1.columns[1:4]].groupby('YEAR').sum().reset_index()
+dt1['CipR_Sum_prevalence'] = dt1['CipR_Sum'] / dt1['TOTAL']
+
+#calculate treatment failure and unnecessary treatment
 def calculate_treatment_stats_sum(data, prevalence_values):
     total = data['TOTAL'].sum()
 
@@ -19,13 +33,13 @@ def calculate_treatment_stats_sum(data, prevalence_values):
     for i, prevalence_value in enumerate(prevalence_values):
         drug_changed = False
         for _, row in data.iterrows():
-            if not drug_changed and row['CipRsum_prevalence'] >= prevalence_value:
+            if not drug_changed and row['CipR_Sum_prevalence'] >= prevalence_value:
                 drug_changed = True
 
             if drug_changed:
-                unnecessary_use[i] += row['TOTAL'] - row['CipRsum']
+                unnecessary_use[i] += row['TOTAL'] - row['CipR_Sum']
             else:
-                failure_to_treat[i] += row['CipRsum']
+                failure_to_treat[i] += row['CipR_Sum']
 
     return pd.DataFrame({
         'Prevalence': prevalence_values,
@@ -37,74 +51,63 @@ def calculate_treatment_stats_sum(data, prevalence_values):
         })
 
 
-def calculate_treatment_stats_new(subset_dt, prevalence_values):
-    results_list = []
+# fixed sampling approach
+def calculate_treatment_stats_sites(df, prevalence_values):
+    # Ensure the DataFrame is sorted by YEAR
+    df = df.sort_values('YEAR')
+    clinic_total = []
+    # Get unique years and clinics
+    years = df['YEAR'].unique()
+    all_clinics = df['CLINIC'].unique()
 
-    for prevalence_value in prevalence_values:
-        tx_stats = subset_dt.copy()
+    for clinic in all_clinics:
+        # Filter data for the current year and selected clinics
+        clinic_data = df[(df['CLINIC'] == clinic)]
+        # calculate for each sites each year the unnecessary use and failure to treat under each prevalence
+        clinic_data_stats = calculate_treatment_stats_sum(clinic_data, prevalence_values)
+        clinic_data_stats['CLINIC'] = clinic
+        clinic_total.append(clinic_data_stats)
+    # append the result of each site together
+    clinic_total = pd.concat(clinic_total, ignore_index=True)
+    clinic_total.columns = ['Prevalence', 'FailureToTreat', 'UnnecessaryUse', 'Total',
+                            'UnnecessaryUsePercentage', 'FailureToTreatPercentage', 'CLINIC']
 
-        # Initialize DrugChange column
-        tx_stats['DrugChange'] = False
+    # sum the failure to treat and unnecessary under each prevalence
+    clinic_sum = clinic_total.groupby('Prevalence')[['FailureToTreat', 'UnnecessaryUse']].sum().reset_index()
+    clinic_sum['TOTAL'] = df['TOTAL'].sum()
+    # recalculate the failure to treat and unnecessary treatment percentage
+    clinic_sum['UnnecessaryUsePercentage'] = clinic_sum['UnnecessaryUse'] / clinic_sum['TOTAL']
+    clinic_sum['FailureToTreatPercentage'] = clinic_sum['FailureToTreat'] / clinic_sum['TOTAL']
 
-        # Apply the drug change logic for each site
-        for site in tx_stats['CLINIC'].unique():
-            site_data = tx_stats[tx_stats['CLINIC'] == site]
-            switch_year = site_data[site_data['CipRsum_prevalence'] >= prevalence_value]['YEAR'].min()
-
-            if pd.notnull(switch_year):
-                tx_stats.loc[(tx_stats['CLINIC'] == site) & (tx_stats['YEAR'] >= switch_year), 'DrugChange'] = True
-
-        # Calculate FailureToTreat and UnnecessaryUse
-        tx_stats['FailureToTreat'] = tx_stats.apply(lambda row: 0 if row['DrugChange'] else row['CipRsum'], axis=1)
-        tx_stats['UnnecessaryUse'] = tx_stats.apply(
-            lambda row: row['TOTAL'] - row['CipRsum'] if row['DrugChange'] else 0, axis=1)
-
-        results = {
-            'FailureToTreat': tx_stats['FailureToTreat'].sum(),
-            'UnnecessaryUse': tx_stats['UnnecessaryUse'].sum(),
-            'Total': tx_stats['TOTAL'].sum(),
-            'CutoffValue': prevalence_value
-        }
-        results['UnnecessaryUsePercentage'] = results['UnnecessaryUse'] / results['Total']
-        results['FailureToTreatPercentage'] = results['FailureToTreat'] / results['Total']
-
-        results_list.append(results)
-
-    return pd.DataFrame(results_list)
+    return clinic_sum
 
 def calculate_auc(x, y):
-    # Ensure the data is sorted by x values
     sorted_data = sorted(zip(x, y))
     x_sorted, y_sorted = zip(*sorted_data)
-
-    # Calculate AUC
     auc = trapz(y_sorted, x_sorted)
+    return auc / (max(x_sorted) * max(y_sorted))
 
-    # Normalize AUC to be between 0 and 1
-    auc_normalized = auc / (max(x_sorted) * max(y_sorted))
 
-    return auc_normalized
+
 
 prevalence_values = np.arange(0, 1.02, 0.02)
-treatment_stats_sum = calculate_treatment_stats_sum(df, prevalence_values)
-results_df = calculate_treatment_stats_new(dt, prevalence_values)
-print(treatment_stats_sum)
-plt.figure(figsize=(12, 6))
+treatment_stats_sum = calculate_treatment_stats_sum(dt, prevalence_values)
+treatment_stats_customized = calculate_treatment_stats_sites(df, prevalence_values)
+
+
 total_auc = calculate_auc(treatment_stats_sum['FailureToTreatPercentage'], treatment_stats_sum['UnnecessaryUsePercentage'])
+customized_auc = calculate_auc(treatment_stats_customized['FailureToTreatPercentage'], treatment_stats_customized['UnnecessaryUsePercentage'])
+plt.figure(figsize=(12, 6),dpi=700)
 plt.plot(treatment_stats_sum['FailureToTreatPercentage'], treatment_stats_sum['UnnecessaryUsePercentage'], color='blue',
-             label=f'All sites (AUC: {total_auc:.4f})')
-
-customized_auc = calculate_auc(results_df['FailureToTreatPercentage'], results_df['UnnecessaryUsePercentage'])
-plt.plot(results_df['FailureToTreatPercentage'], results_df['UnnecessaryUsePercentage'], color='red',
-             label=f'Customized All sites (AUC: {customized_auc:.4f})')
-
+             label=f'All sites National (AUC: {total_auc:.4f})')
+plt.plot(treatment_stats_customized['FailureToTreatPercentage'], treatment_stats_customized['UnnecessaryUsePercentage'], color='red',
+             label=f'All sites Customized (AUC: {customized_auc:.4f})')
 plt.xlabel('Failure to Treat (%)')
 plt.ylabel('Unnecessary Treatment (%)')
-plt.title('Customized V.S. Uniform')
+plt.title(f'Failure to Treat v.s. Unnecessary Treatment under different threshold (2000-2022): Customized v.s. All sites')
 plt.gca().xaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
 plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
 plt.legend()
 plt.grid(True)
-plt.tight_layout()
-plt.savefig('Figures/Customized v.s Uniform.png')
+plt.savefig('Figures/Customized Sampling_GISP.png')
 plt.show()

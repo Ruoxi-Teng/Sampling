@@ -5,18 +5,100 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b3022391-1393-4eca-8ec3-894acee0cf72" name="Changes" comment="update">
+      <change afterPath="$PROJECT_DIR$/DataSimulation.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PlotFixedSampling_Customized.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PlotMinCost_Customized_GISP.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PlotMinCost_FixedLambda_Simulated.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PlotMinCost_GISP.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PlotRandomSampling_Customized.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Sampling.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Sampling.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/All_Selected_Sites_Population.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/All_Selected_Sites_Population.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/PrevalenceWithUandFinPopulation.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/PrevalenceWithUandFinPopulation.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/auc_results_sample_varying_threshold.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/auc_results_sample_varying_threshold.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/sample_curve_results.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/sample_curve_results.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Figures/Customized v.s Uniform.png" beforeDir="false" afterPath="$PROJECT_DIR$/Figures/Customized v.s Uniform.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Figures/Min Cost Strategy for sampled population varying threshold.png" beforeDir="false" afterPath="$PROJECT_DIR$/Figures/Min Cost Strategy for sampled population varying threshold.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Figures/Min Cost Strategy for total population varying threshold.png" beforeDir="false" afterPath="$PROJECT_DIR$/Figures/Min Cost Strategy for total population varying threshold.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CreatePrevalence.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/10 sites.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/5 sites.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/All_Selected_Sites_Population.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/CIP_summary.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/CIP_summary_by_sites.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/PrevalenceWithUandFinPopulation.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/Selected_Sites_Sample.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/Selected_Sites_Total.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/all sites.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/auc_results_customized_vs_uniform.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/auc_results_sample_varying_threshold.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/fitting_results.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/fixed_dots_summary_1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/fixed_dots_summary_10.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/fixed_dots_summary_5.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/fixed_dots_summary_mean_1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/fixed_dots_summary_mean_10.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/fixed_dots_summary_mean_5.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/fixed_summary_1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/fixed_summary_10.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/fixed_summary_5.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/fixed_summary_mean_1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/fixed_summary_mean_10.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/fixed_summary_mean_5.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/lambda_results.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/lambda_results_fitting.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/random_dots_summary_1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/random_dots_summary_10.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/random_dots_summary_5.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/random_dots_summary_mean_1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/random_dots_summary_mean_10.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/random_dots_summary_mean_5.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/random_summary_1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/random_summary_10.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/random_summary_5.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/random_summary_mean_1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/random_summary_mean_10.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/random_summary_mean_5.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/sample_curve_results.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataCleaning.py" beforeDir="false" afterPath="$PROJECT_DIR$/DataCleaning.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Customized v.s Uniform.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Fit_comparison_10_clinics.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Fit_comparison_10_clinics_fixed.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Fit_comparison_1_clinics.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Fit_comparison_1_clinics_fixed.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Fit_comparison_5_clinics.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Fit_comparison_5_clinics_fixed.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Fixed 1 sites dots.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Fixed 1 sites.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Fixed 1 sites_with_fit.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Fixed 10 sites dots.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Fixed 10 sites.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Fixed 10 sites_with_fit.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Fixed 5 sites dots.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Fixed 5 sites.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Fixed 5 sites_with_fit.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Min Cost Strategy for sampled population varying threshold.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Min Cost Strategy for total population varying threshold.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Min Cost Strategy.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Random 1 sites dots.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Random 1 sites.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Random 1 sites_with_fit.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Random 10 sites dots.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Random 10 sites.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Random 10 sites_with_fit.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Random 5 sites dots.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Random 5 sites.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/Random 5 sites_with_fit.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/lambda_values.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/lambda_values_fitting.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/model_fitting_comparison.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Figures/prevalence.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/PlotCustomizedSampling.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotCustomizedSampling.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PlotMinCost_CustomizedUpdated.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotMinCost_CustomizedUpdated.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PlotMinCost_updated.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotMinCost_updated.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TestMinCost.py" beforeDir="false" afterPath="$PROJECT_DIR$/TestMinCost.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PlotFixedSampling.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotFixedSampling.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PlotMinCostRevised.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/PlotMinCost_CustomizedUpdated.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/PlotMinCost_updated.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/PlotPrevalence.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotPrevalence.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PlotRandomSampling.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotRandomSampling.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TestLambda.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TestLambda_New.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TestMinCost.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TestSampling.py" beforeDir="false" afterPath="$PROJECT_DIR$/TestSampling.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TestSampling_Fixed.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,6 +113,12 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="PUSH_TAGS">
+      <GitPushTagMode>
+        <option name="argument" value="--follow-tags" />
+        <option name="title" value="Current Branch" />
+      </GitPushTagMode>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="MarkdownSettingsMigration">
@@ -49,17 +137,21 @@
   "keyToString": {
     "Python.CreatePrevalence.executor": "Run",
     "Python.DataCleaning.executor": "Run",
+    "Python.DataSimulation.executor": "Run",
     "Python.PlotCustomizedSampling.executor": "Run",
     "Python.PlotFixedSampling.executor": "Run",
+    "Python.PlotFixedSampling_Customized.executor": "Run",
     "Python.PlotMinCost.executor": "Run",
     "Python.PlotMinCostRevised.executor": "Run",
     "Python.PlotMinCost_Customized.executor": "Run",
     "Python.PlotMinCost_CustomizedRevised.executor": "Run",
     "Python.PlotMinCost_CustomizedUpdated.executor": "Run",
+    "Python.PlotMinCost_GISP.executor": "Run",
     "Python.PlotMinCost_updated.executor": "Run",
     "Python.PlotMonCost_CustomizedRevised.executor": "Run",
     "Python.PlotPrevalence.executor": "Run",
     "Python.PlotRandomSampling.executor": "Run",
+    "Python.PlotRandomSampling_Customized.executor": "Run",
     "Python.TestLambda.executor": "Run",
     "Python.TestLambda_New.executor": "Run",
     "Python.TestMinCost.executor": "Run",
@@ -76,8 +168,8 @@
       <recent name="C:\Users\tengr\Downloads\Desktop" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\tengr\PycharmProjects\Sampling\Data" />
       <recent name="C:\Users\tengr\PycharmProjects\Sampling" />
+      <recent name="C:\Users\tengr\PycharmProjects\Sampling\Data" />
     </key>
   </component>
   <component name="SharedIndexes">
@@ -416,7 +508,15 @@
       <option name="project" value="LOCAL" />
       <updated>1722823777275</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="update">
+      <option name="closed" value="true" />
+      <created>1723001932498</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1723001932498</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -434,16 +534,5 @@
     <MESSAGE value="plot prevalence" />
     <MESSAGE value="update" />
     <option name="LAST_COMMIT_MESSAGE" value="update" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/PlotFixedSampling.py</url>
-          <line>44</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
