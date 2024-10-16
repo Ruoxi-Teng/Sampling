@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import trapz
+import seaborn as sns
 
 # Load and preprocess data
 df = pd.read_csv("Data/CIP_summary_by_sites.csv")
@@ -50,6 +51,34 @@ def calculate_treatment_stats_sum(data, prevalence_values):
         'FailureToTreatPercentage': failure_to_treat / total
         })
 
+def calculate_treatment_stats_sites(df, prevalence_values):
+    # Ensure the DataFrame is sorted by YEAR
+    df = df.sort_values('YEAR')
+    clinic_total = []
+    # Get unique years and clinics
+    years = df['YEAR'].unique()
+    all_clinics = df['CLINIC'].unique()
+
+    for clinic in all_clinics:
+        # Filter data for the current year and selected clinics
+        clinic_data = df[(df['CLINIC'] == clinic)]
+        # calculate for each sites each year the unnecessary use and failure to treat under each prevalence
+        clinic_data_stats = calculate_treatment_stats_sum(clinic_data, prevalence_values)
+        clinic_data_stats['CLINIC'] = clinic
+        clinic_total.append(clinic_data_stats)
+    # append the result of each site together
+    clinic_total = pd.concat(clinic_total, ignore_index=True)
+    clinic_total.columns = ['Prevalence', 'FailureToTreat', 'UnnecessaryUse', 'Total',
+                            'UnnecessaryUsePercentage', 'FailureToTreatPercentage', 'CLINIC']
+
+    # sum the failure to treat and unnecessary under each prevalence
+    clinic_sum = clinic_total.groupby('Prevalence')[['FailureToTreat', 'UnnecessaryUse']].sum().reset_index()
+    clinic_sum['TOTAL'] = df['TOTAL'].sum()
+    # recalculate the failure to treat and unnecessary treatment percentage
+    clinic_sum['UnnecessaryUsePercentage'] = clinic_sum['UnnecessaryUse'] / clinic_sum['TOTAL']
+    clinic_sum['FailureToTreatPercentage'] = clinic_sum['FailureToTreat'] / clinic_sum['TOTAL']
+
+    return clinic_sum
 
 # fixed sampling approach
 def select_random_clinics_multiple_samples(df, num_clinics, num_samples):
@@ -152,6 +181,7 @@ def plot_random_results(results, treatment_stats_sum, num_clinics):
 
 prevalence_values = np.arange(0, 1.02, 0.02)
 treatment_stats_sum = calculate_treatment_stats_sum(dt, prevalence_values)
+treatment_stats_customized = calculate_treatment_stats_sites(df, prevalence_values)
 
 # Generate and plot results for 5 and 10 clinics
 # result: random sampling
@@ -162,12 +192,12 @@ for num_clinics in [1, 5, 10]:
     plt.show()
 
 
-def plot_combined_results(results_dict, treatment_stats_sum):
+def plot_combined_results(results_dict, treatment_stats_sum, treatment_stats_customized, prevalence_values):
     plt.figure(figsize=(12, 8), dpi=700)
 
-    colors = ['orange', 'yellow', 'green']
+    colors = ['orange', 'gold', 'green']
 
-    # Plot mean results for each number of clinics
+    # Plot mean results with confidence intervals for each number of clinics
     for i, (num_clinics, results) in enumerate(results_dict.items()):
         sample_total = []
         for sample in results['Sample'].unique():
@@ -176,20 +206,30 @@ def plot_combined_results(results_dict, treatment_stats_sum):
             sample_final['Sample'] = sample
             sample_total.append(sample_final)
 
-        sample_total = pd.concat(sample_total, ignore_index=True)
-        mean_results = sample_total.groupby('Prevalence')[
+        sample_total_df = pd.concat(sample_total, ignore_index=True)
+        mean_results = sample_total_df.groupby('Prevalence')[
             ['FailureToTreatPercentage', 'UnnecessaryUsePercentage']].mean()
         mean_auc = calculate_auc(mean_results['FailureToTreatPercentage'], mean_results['UnnecessaryUsePercentage'])
 
-        plt.plot(mean_results['FailureToTreatPercentage'], mean_results['UnnecessaryUsePercentage'],
-                 color=colors[i], label=f'Mean of {num_clinics} clinics (AUC: {mean_auc:.4f})')
+        sns.lineplot(data=sample_total_df, x='FailureToTreatPercentage', y='UnnecessaryUsePercentage',
+                     color=colors[i], label=f'{num_clinics} clinics (AUC: {mean_auc:.4f})', errorbar=('ci', 95))
 
-    # Plot treatment_stats_sum
+
+        # plt.plot(mean_results['FailureToTreatPercentage'], mean_results['UnnecessaryUsePercentage'],
+                 # color=colors[i], label=f'Mean of {num_clinics} clinics (AUC: {mean_auc:.4f})')
+
+        # Plot treatment_stats_sum
     total_auc = calculate_auc(treatment_stats_sum['FailureToTreatPercentage'],
                               treatment_stats_sum['UnnecessaryUsePercentage'])
     plt.plot(treatment_stats_sum['FailureToTreatPercentage'], treatment_stats_sum['UnnecessaryUsePercentage'],
-             color='blue', label=f'All sites (AUC: {total_auc:.4f})')
+             color='blue', label=f'United All sites (AUC: {total_auc:.4f})')
 
+    # Plot customized switch curve (treatment_stats_customized)
+    customized_auc = calculate_auc(treatment_stats_customized['FailureToTreatPercentage'],
+                                   treatment_stats_customized['UnnecessaryUsePercentage'])
+    plt.plot(treatment_stats_customized['FailureToTreatPercentage'],
+             treatment_stats_customized['UnnecessaryUsePercentage'], color='red',
+             label=f'Customized All sites (AUC: {customized_auc:.4f})')
     plt.xlabel('Failure to Treat (%)')
     plt.ylabel('Unnecessary Treatment (%)')
     plt.title('Failure to Treat vs. Unnecessary Treatment under different thresholds (2000-2022): Combined Results')
@@ -205,6 +245,6 @@ for num_clinics in [1, 5, 10]:
     random_sample_results = select_random_clinics_multiple_samples(df1, num_clinics, 1500)
     results_dict[num_clinics] = random_sample_results
 
-plot = plot_combined_results(results_dict, treatment_stats_sum)
+plot = plot_combined_results(results_dict, treatment_stats_sum,treatment_stats_customized,prevalence_values)
 plot.savefig('Figures/Random_Sampling_Combined_GISP.png')
 plt.show()
