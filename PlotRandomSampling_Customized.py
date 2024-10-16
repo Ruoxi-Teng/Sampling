@@ -4,11 +4,18 @@ import matplotlib.pyplot as plt
 from scipy.integrate import trapz
 
 # Load and preprocess data
-df = pd.read_csv("Data/CIP_summary_by_sites.csv")
-df = df.drop(columns=df.columns[0])
-df['CipR_Sum_prevalence'] = df['CipR_Sum'] / df['TOTAL']
-dt = pd.read_csv("Data/CIP_summary.csv")
-dt = dt.drop(columns=dt.columns[0])
+# Load and preprocess data
+# df = pd.read_csv("Data/CIP_summary_by_sites.csv")
+# df = df.drop(columns=df.columns[0])
+# df['CipR_Sum_prevalence'] = df['CipR_Sum'] / df['TOTAL']
+# dt = pd.read_csv("Data/CIP_summary.csv")
+# dt = dt.drop(columns=dt.columns[0])
+
+# Load and preprocess data
+df = pd.read_csv("Data/site_prevalence_data.csv")
+# df = df.drop(columns=df.columns[0])
+dt = pd.read_csv("Data/total_prevalence_data.csv")
+# dt = dt.drop(columns=dt.columns[0])
 
 def preprocess_data(data):
     min_year, max_year = data['YEAR'].min(), data['YEAR'].max()
@@ -256,10 +263,10 @@ treatment_stats_sum=calculate_treatment_stats_sum(dt,prevalence_values)
 treatment_stats_customized=calculate_treatment_stats_sites(df,prevalence_values)
 
 # result: fixed sampling
-for num_clinics in [1, 5, 10]:
+for num_clinics in [5, 10, 20]:
     fixed_sample_results = select_random_clinics_multiple_samples(df1, num_clinics, 1000)
     plot = plot_random_results(fixed_sample_results,  treatment_stats_sum, treatment_stats_customized,num_clinics)
-    plot.savefig(f'Figures/Random {num_clinics} sites Customized_GISP.png')
+    plot.savefig(f'Figures/Random {num_clinics} sites Customized_Simulated.png')
     plt.show()
 
 
@@ -308,10 +315,10 @@ treatment_stats_sum = calculate_treatment_stats_sum(dt, prevalence_values)
 treatment_stats_customized = calculate_treatment_stats_sites(df, prevalence_values)
 
 results_dict = {}
-for num_clinics in [1, 5, 10]:
+for num_clinics in [5, 10, 20]:
     random_sample_results = select_random_clinics_multiple_samples(df1, num_clinics, 100)
     results_dict[num_clinics] = random_sample_results
 
 plot = plot_combined_random_results_simplified(results_dict, treatment_stats_sum, treatment_stats_customized)
-plot.savefig('Figures/Combined_Random_Samples_Customized_GISP.png')
+plot.savefig('Figures/Combined_Random_Samples_Customized_Simulated.png')
 plt.show()

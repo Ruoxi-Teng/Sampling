@@ -160,7 +160,7 @@ for i, clinic in enumerate(clinics_actual):
 
 plt.xlabel("Year")
 plt.ylabel("Antibiotic Resistance Prevalence")
-plt.legend(bbox_to_anchor=(0.5, -0.15), loc='upper center', ncol=5)
+# plt.legend(bbox_to_anchor=(0.5, -0.15), loc='upper center', ncol=5)
 plt.tight_layout()
 plt.title('Cip Antibiotic Resistance Prevalence: Actual vs Simulated')
 

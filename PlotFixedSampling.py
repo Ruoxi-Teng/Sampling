@@ -5,11 +5,17 @@ from scipy.integrate import trapz
 import seaborn as sns
 
 # Load and preprocess data
-df = pd.read_csv("Data/CIP_summary_by_sites.csv")
-df = df.drop(columns=df.columns[0])
-df['CipR_Sum_prevalence'] = df['CipR_Sum'] / df['TOTAL']
-dt = pd.read_csv("Data/CIP_summary.csv")
-dt = dt.drop(columns=dt.columns[0])
+# df = pd.read_csv("Data/CIP_summary_by_sites.csv")
+# df = df.drop(columns=df.columns[0])
+# df['CipR_Sum_prevalence'] = df['CipR_Sum'] / df['TOTAL']
+# dt = pd.read_csv("Data/CIP_summary.csv")
+# dt = dt.drop(columns=dt.columns[0])
+
+# Load and preprocess data
+df = pd.read_csv("Data/site_prevalence_data.csv")
+# df = df.drop(columns=df.columns[0])
+dt = pd.read_csv("Data/total_prevalence_data.csv")
+# dt = dt.drop(columns=dt.columns[0])
 
 def preprocess_data(data):
     min_year, max_year = data['YEAR'].min(), data['YEAR'].max()
@@ -183,16 +189,16 @@ treatment_stats_sum = calculate_treatment_stats_sum(dt, prevalence_values)
 treatment_stats_customized = calculate_treatment_stats_sites(df, prevalence_values)
 # Generate and plot results for 5 and 10 clinics
 # result: random sampling
-for num_clinics in [1, 5, 10]:
+for num_clinics in [5, 10, 20]:
     random_sample_results= select_fixed_clinics_multiple_samples(df1, num_clinics, 1500)
     plot = plot_fixed_results(random_sample_results, treatment_stats_sum, num_clinics)
-    plot.savefig(f'Figures/Fixed {num_clinics} sites_GISP.png')
+    plot.savefig(f'Figures/Fixed {num_clinics} sites_Simulated.png')
     plt.show()
 
 def plot_combined_results(results_dict, treatment_stats_sum, treatment_stats_customized, prevalence_values):
     plt.figure(figsize=(12, 8), dpi=700)
 
-    colors = ['orange', 'yellow', 'green']
+    colors = ['orange', 'gold', 'green']
 
     # Plot mean results with confidence intervals for each number of clinics
     for i, (num_clinics, results) in enumerate(results_dict.items()):
@@ -204,18 +210,14 @@ def plot_combined_results(results_dict, treatment_stats_sum, treatment_stats_cus
             sample_total.append(sample_final)
 
         sample_total_df = pd.concat(sample_total, ignore_index=True)
-
-        sns.lineplot(data=sample_total_df, x='FailureToTreatPercentage', y='UnnecessaryUsePercentage',
-                     color=colors[i], label=f'{num_clinics} clinics', ci=95)
-
-        # Calculate and display AUC
         mean_results = sample_total_df.groupby('Prevalence')[
             ['FailureToTreatPercentage', 'UnnecessaryUsePercentage']].mean()
         mean_auc = calculate_auc(mean_results['FailureToTreatPercentage'], mean_results['UnnecessaryUsePercentage'])
+
         plt.plot(mean_results['FailureToTreatPercentage'], mean_results['UnnecessaryUsePercentage'],
                  color=colors[i], label=f'Mean of {num_clinics} clinics (AUC: {mean_auc:.4f})')
 
-    # Plot treatment_stats_sum
+        # Plot treatment_stats_sum
     total_auc = calculate_auc(treatment_stats_sum['FailureToTreatPercentage'],
                               treatment_stats_sum['UnnecessaryUsePercentage'])
     plt.plot(treatment_stats_sum['FailureToTreatPercentage'], treatment_stats_sum['UnnecessaryUsePercentage'],
@@ -227,7 +229,6 @@ def plot_combined_results(results_dict, treatment_stats_sum, treatment_stats_cus
     plt.plot(treatment_stats_customized['FailureToTreatPercentage'],
              treatment_stats_customized['UnnecessaryUsePercentage'], color='red',
              label=f'Customized All sites (AUC: {customized_auc:.4f})')
-
     plt.xlabel('Failure to Treat (%)')
     plt.ylabel('Unnecessary Treatment (%)')
     plt.title('Failure to Treat vs. Unnecessary Treatment under different thresholds (2000-2022): Combined Results')
@@ -240,10 +241,10 @@ def plot_combined_results(results_dict, treatment_stats_sum, treatment_stats_cus
 
 
 results_dict = {}
-for num_clinics in [1, 5, 10]:
+for num_clinics in [5, 10, 20]:
     random_sample_results = select_fixed_clinics_multiple_samples(df1, num_clinics, 1500)
     results_dict[num_clinics] = random_sample_results
 
 plot = plot_combined_results(results_dict, treatment_stats_sum,treatment_stats_customized,prevalence_values)
-plot.savefig('Figures/Fixed_Sampling_Combined_GISP.png')
+plot.savefig('Figures/Fixed_Sampling_Combined_Simulated.png')
 plt.show()

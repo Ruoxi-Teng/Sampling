@@ -5,11 +5,10 @@ from scipy.integrate import trapz
 import seaborn as sns
 
 # Load and preprocess data
-df = pd.read_csv("Data/CIP_summary_by_sites.csv")
-df = df.drop(columns=df.columns[0])
-df['CipR_Sum_prevalence'] = df['CipR_Sum'] / df['TOTAL']
-dt = pd.read_csv("Data/CIP_summary.csv")
-dt = dt.drop(columns=dt.columns[0])
+df = pd.read_csv("Data/site_prevalence_data.csv")
+# df = df.drop(columns=df.columns[0])
+dt = pd.read_csv("Data/total_prevalence_data.csv")
+# dt = dt.drop(columns=dt.columns[0])
 
 def preprocess_data(data):
     min_year, max_year = data['YEAR'].min(), data['YEAR'].max()
@@ -185,10 +184,10 @@ treatment_stats_customized = calculate_treatment_stats_sites(df, prevalence_valu
 
 # Generate and plot results for 5 and 10 clinics
 # result: random sampling
-for num_clinics in [1, 5, 10]:
+for num_clinics in [5, 10, 20]:
     random_sample_results= select_random_clinics_multiple_samples(df1, num_clinics, 1500)
     plot = plot_random_results(random_sample_results, treatment_stats_sum, num_clinics)
-    plot.savefig(f'Figures/Random {num_clinics} sites_GISP.png')
+    plot.savefig(f'Figures/Random {num_clinics} sites_Simulated.png')
     plt.show()
 
 
@@ -211,12 +210,8 @@ def plot_combined_results(results_dict, treatment_stats_sum, treatment_stats_cus
             ['FailureToTreatPercentage', 'UnnecessaryUsePercentage']].mean()
         mean_auc = calculate_auc(mean_results['FailureToTreatPercentage'], mean_results['UnnecessaryUsePercentage'])
 
-        sns.lineplot(data=sample_total_df, x='FailureToTreatPercentage', y='UnnecessaryUsePercentage',
-                     color=colors[i], label=f'{num_clinics} clinics (AUC: {mean_auc:.4f})', errorbar=('ci', 95))
-
-
-        # plt.plot(mean_results['FailureToTreatPercentage'], mean_results['UnnecessaryUsePercentage'],
-                 # color=colors[i], label=f'Mean of {num_clinics} clinics (AUC: {mean_auc:.4f})')
+        plt.plot(mean_results['FailureToTreatPercentage'], mean_results['UnnecessaryUsePercentage'],
+                 color=colors[i], label=f'Mean of {num_clinics} clinics (AUC: {mean_auc:.4f})')
 
         # Plot treatment_stats_sum
     total_auc = calculate_auc(treatment_stats_sum['FailureToTreatPercentage'],
@@ -241,10 +236,10 @@ def plot_combined_results(results_dict, treatment_stats_sum, treatment_stats_cus
     return plt.gcf()
 
 results_dict = {}
-for num_clinics in [1, 5, 10]:
+for num_clinics in [5, 10, 20]:
     random_sample_results = select_random_clinics_multiple_samples(df1, num_clinics, 1500)
     results_dict[num_clinics] = random_sample_results
 
 plot = plot_combined_results(results_dict, treatment_stats_sum,treatment_stats_customized,prevalence_values)
-plot.savefig('Figures/Random_Sampling_Combined_GISP.png')
+plot.savefig('Figures/Random_Sampling_Combined_Simulated.png')
 plt.show()
