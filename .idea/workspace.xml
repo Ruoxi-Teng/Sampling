@@ -5,14 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b3022391-1393-4eca-8ec3-894acee0cf72" name="Changes" comment="update">
+      <change afterPath="$PROJECT_DIR$/Figures/Combined_Fixed_Samples_Customized_GISP.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Figures/Combined_Random_Samples_Customized_GISP.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Figures/Fixed 1 sites_Simulated.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Figures/Fixed 10 sites Customized_GISP.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Figures/Fixed 10 sites Customized_Simulated.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Figures/Fixed 10 sites_Simulated.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Figures/Fixed 20 sites Customized_Simulated.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Figures/Fixed 20 sites_Simulated.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Figures/Fixed 5 sites Customized_GISP.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Figures/Fixed 5 sites Customized_Simulated.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Figures/Fixed 5 sites_Simulated.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Figures/Fixed_Sampling_Combined_Simulated.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Figures/Random 1 sites_Simulated.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Figures/Random 10 sites Customized_GISP.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Figures/Random 10 sites_Simulated.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Figures/Random 20 sites_Simulated.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Figures/Random 5 sites Customized_GISP.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Figures/Random 5 sites_Simulated.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Figures/Random_Sampling_Combined_Simulated.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataSimulation.py" beforeDir="false" afterPath="$PROJECT_DIR$/DataSimulation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Figures/Fixed_Sampling_Combined_GISP.png" beforeDir="false" afterPath="$PROJECT_DIR$/Figures/Fixed_Sampling_Combined_GISP.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Figures/Prevalence_Cip_clinics_actual_vs_simulated.png" beforeDir="false" afterPath="$PROJECT_DIR$/Figures/Prevalence_Cip_clinics_actual_vs_simulated.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Figures/Random_Sampling_Combined_GISP.png" beforeDir="false" afterPath="$PROJECT_DIR$/Figures/Random_Sampling_Combined_GISP.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PlotFixedSampling.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotFixedSampling.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PlotFixedSampling_Customized.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotFixedSampling_Customized.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PlotRandomSampling.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotRandomSampling.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PlotRandomSampling_Customized.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotRandomSampling_Customized.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -441,7 +453,15 @@
       <option name="project" value="LOCAL" />
       <updated>1729052159057</updated>
     </task>
-    <option name="localTasksCounter" value="44" />
+    <task id="LOCAL-00044" summary="update">
+      <option name="closed" value="true" />
+      <created>1729109889547</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1729109889547</updated>
+    </task>
+    <option name="localTasksCounter" value="45" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

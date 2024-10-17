@@ -264,7 +264,7 @@ treatment_stats_customized=calculate_treatment_stats_sites(df,prevalence_values)
 
 # result: fixed sampling
 for num_clinics in [5, 10, 20]:
-    fixed_sample_results = select_random_clinics_multiple_samples(df1, num_clinics, 1000)
+    fixed_sample_results = select_random_clinics_multiple_samples(df1, num_clinics, 100)
     plot = plot_random_results(fixed_sample_results,  treatment_stats_sum, treatment_stats_customized,num_clinics)
     plot.savefig(f'Figures/Random {num_clinics} sites Customized_Simulated.png')
     plt.show()
