@@ -184,11 +184,11 @@ treatment_stats_customized = calculate_treatment_stats_sites(df, prevalence_valu
 
 # Generate and plot results for 5 and 10 clinics
 # result: random sampling
-for num_clinics in [5, 10, 20]:
-    random_sample_results= select_random_clinics_multiple_samples(df1, num_clinics, 1500)
-    plot = plot_random_results(random_sample_results, treatment_stats_sum, num_clinics)
-    plot.savefig(f'Figures/Random {num_clinics} sites_Simulated.png')
-    plt.show()
+# for num_clinics in [5, 10, 20]:
+    # random_sample_results= select_random_clinics_multiple_samples(df1, num_clinics, 1500)
+    # plot = plot_random_results(random_sample_results, treatment_stats_sum, num_clinics)
+    # plot.savefig(f'Figures/Random {num_clinics} sites_Simulated.png')
+    # plt.show()
 
 
 def plot_combined_results(results_dict, treatment_stats_sum, treatment_stats_customized, prevalence_values):
@@ -227,7 +227,7 @@ def plot_combined_results(results_dict, treatment_stats_sum, treatment_stats_cus
              label=f'Customized All sites (AUC: {customized_auc:.4f})')
     plt.xlabel('Failure to Treat (%)')
     plt.ylabel('Unnecessary Treatment (%)')
-    plt.title('Failure to Treat vs. Unnecessary Treatment under different thresholds (2000-2022): Combined Results')
+    plt.title('Failure to Treat vs. Unnecessary Treatment under different thresholds (2000-2022): Combined Random Results')
     plt.gca().xaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
     plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
     plt.legend()
@@ -241,5 +241,5 @@ for num_clinics in [5, 10, 20]:
     results_dict[num_clinics] = random_sample_results
 
 plot = plot_combined_results(results_dict, treatment_stats_sum,treatment_stats_customized,prevalence_values)
-plot.savefig('Figures/Random_Sampling_Combined_Simulated.png')
+plot.savefig('Figures/Random_Sampling_Combined_GISP.png')
 plt.show()

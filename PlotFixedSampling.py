@@ -5,16 +5,16 @@ from scipy.integrate import trapz
 import seaborn as sns
 
 # Load and preprocess data
-# df = pd.read_csv("Data/CIP_summary_by_sites.csv")
-# df = df.drop(columns=df.columns[0])
-# df['CipR_Sum_prevalence'] = df['CipR_Sum'] / df['TOTAL']
-# dt = pd.read_csv("Data/CIP_summary.csv")
-# dt = dt.drop(columns=dt.columns[0])
+df = pd.read_csv("Data/CIP_summary_by_sites.csv")
+df = df.drop(columns=df.columns[0])
+df['CipR_Sum_prevalence'] = df['CipR_Sum'] / df['TOTAL']
+dt = pd.read_csv("Data/CIP_summary.csv")
+dt = dt.drop(columns=dt.columns[0])
 
 # Load and preprocess data
-df = pd.read_csv("Data/site_prevalence_data.csv")
+# df = pd.read_csv("Data/site_prevalence_data.csv")
 # df = df.drop(columns=df.columns[0])
-dt = pd.read_csv("Data/total_prevalence_data.csv")
+# dt = pd.read_csv("Data/total_prevalence_data.csv")
 # dt = dt.drop(columns=dt.columns[0])
 
 def preprocess_data(data):
@@ -189,11 +189,11 @@ treatment_stats_sum = calculate_treatment_stats_sum(dt, prevalence_values)
 treatment_stats_customized = calculate_treatment_stats_sites(df, prevalence_values)
 # Generate and plot results for 5 and 10 clinics
 # result: random sampling
-for num_clinics in [5, 10, 20]:
-    random_sample_results= select_fixed_clinics_multiple_samples(df1, num_clinics, 1500)
-    plot = plot_fixed_results(random_sample_results, treatment_stats_sum, num_clinics)
-    plot.savefig(f'Figures/Fixed {num_clinics} sites_Simulated.png')
-    plt.show()
+# for num_clinics in [5, 10, 20]:
+    # random_sample_results= select_fixed_clinics_multiple_samples(df1, num_clinics, 1500)
+    # plot = plot_fixed_results(random_sample_results, treatment_stats_sum, num_clinics)
+    # plot.savefig(f'Figures/Fixed {num_clinics} sites_Simulated.png')
+    # plt.show()
 
 def plot_combined_results(results_dict, treatment_stats_sum, treatment_stats_customized, prevalence_values):
     plt.figure(figsize=(12, 8), dpi=700)
@@ -231,7 +231,7 @@ def plot_combined_results(results_dict, treatment_stats_sum, treatment_stats_cus
              label=f'Customized All sites (AUC: {customized_auc:.4f})')
     plt.xlabel('Failure to Treat (%)')
     plt.ylabel('Unnecessary Treatment (%)')
-    plt.title('Failure to Treat vs. Unnecessary Treatment under different thresholds (2000-2022): Combined Results')
+    plt.title('Failure to Treat vs. Unnecessary Treatment under different thresholds (2000-2022): Combined Fixed Results')
     plt.gca().xaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
     plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
     plt.legend()
@@ -246,5 +246,5 @@ for num_clinics in [5, 10, 20]:
     results_dict[num_clinics] = random_sample_results
 
 plot = plot_combined_results(results_dict, treatment_stats_sum,treatment_stats_customized,prevalence_values)
-plot.savefig('Figures/Fixed_Sampling_Combined_Simulated.png')
+plot.savefig('Figures/Fixed_Sampling_Combined_GISP.png')
 plt.show()
