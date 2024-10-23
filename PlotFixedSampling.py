@@ -241,7 +241,7 @@ def plot_combined_results(results_dict, treatment_stats_sum, treatment_stats_cus
 
 
 results_dict = {}
-for num_clinics in [5, 10, 20]:
+for num_clinics in [1, 5, 10]:
     random_sample_results = select_fixed_clinics_multiple_samples(df1, num_clinics, 1500)
     results_dict[num_clinics] = random_sample_results
 

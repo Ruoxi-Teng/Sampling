@@ -6,10 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="b3022391-1393-4eca-8ec3-894acee0cf72" name="Changes" comment="update">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Figures/Fixed_Sampling_Combined_GISP.png" beforeDir="false" afterPath="$PROJECT_DIR$/Figures/Fixed_Sampling_Combined_GISP.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Figures/Fixed_Sampling_Combined_Simulated.png" beforeDir="false" afterPath="$PROJECT_DIR$/Figures/Fixed_Sampling_Combined_Simulated.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Figures/Random_Sampling_Combined_GISP.png" beforeDir="false" afterPath="$PROJECT_DIR$/Figures/Random_Sampling_Combined_GISP.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Figures/Random_Sampling_Combined_Simulated.png" beforeDir="false" afterPath="$PROJECT_DIR$/Figures/Random_Sampling_Combined_Simulated.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PlotFixedSampling.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotFixedSampling.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PlotRandomSampling.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlotRandomSampling.py" afterDir="false" />
     </list>
@@ -40,36 +36,36 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.CreatePrevalence.executor": "Run",
-    "Python.DataCleaning.executor": "Run",
-    "Python.DataSimulation.executor": "Run",
-    "Python.PlotCustomizedSampling.executor": "Run",
-    "Python.PlotFixedSampling.executor": "Run",
-    "Python.PlotFixedSampling_Customized.executor": "Run",
-    "Python.PlotMinCost.executor": "Run",
-    "Python.PlotMinCostRevised.executor": "Run",
-    "Python.PlotMinCost_Customized.executor": "Run",
-    "Python.PlotMinCost_CustomizedRevised.executor": "Run",
-    "Python.PlotMinCost_CustomizedUpdated.executor": "Run",
-    "Python.PlotMinCost_GISP.executor": "Run",
-    "Python.PlotMinCost_updated.executor": "Run",
-    "Python.PlotMonCost_CustomizedRevised.executor": "Run",
-    "Python.PlotPrevalence.executor": "Run",
-    "Python.PlotRandomSampling.executor": "Run",
-    "Python.PlotRandomSampling_Customized.executor": "Run",
-    "Python.TestLambda.executor": "Run",
-    "Python.TestLambda_New.executor": "Run",
-    "Python.TestMinCost.executor": "Run",
-    "Python.TestSampling.executor": "Run",
-    "Python.TestSampling_Fixed.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/tengr/Downloads/Desktop"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.CreatePrevalence.executor&quot;: &quot;Run&quot;,
+    &quot;Python.DataCleaning.executor&quot;: &quot;Run&quot;,
+    &quot;Python.DataSimulation.executor&quot;: &quot;Run&quot;,
+    &quot;Python.PlotCustomizedSampling.executor&quot;: &quot;Run&quot;,
+    &quot;Python.PlotFixedSampling.executor&quot;: &quot;Run&quot;,
+    &quot;Python.PlotFixedSampling_Customized.executor&quot;: &quot;Run&quot;,
+    &quot;Python.PlotMinCost.executor&quot;: &quot;Run&quot;,
+    &quot;Python.PlotMinCostRevised.executor&quot;: &quot;Run&quot;,
+    &quot;Python.PlotMinCost_Customized.executor&quot;: &quot;Run&quot;,
+    &quot;Python.PlotMinCost_CustomizedRevised.executor&quot;: &quot;Run&quot;,
+    &quot;Python.PlotMinCost_CustomizedUpdated.executor&quot;: &quot;Run&quot;,
+    &quot;Python.PlotMinCost_GISP.executor&quot;: &quot;Run&quot;,
+    &quot;Python.PlotMinCost_updated.executor&quot;: &quot;Run&quot;,
+    &quot;Python.PlotMonCost_CustomizedRevised.executor&quot;: &quot;Run&quot;,
+    &quot;Python.PlotPrevalence.executor&quot;: &quot;Run&quot;,
+    &quot;Python.PlotRandomSampling.executor&quot;: &quot;Run&quot;,
+    &quot;Python.PlotRandomSampling_Customized.executor&quot;: &quot;Run&quot;,
+    &quot;Python.TestLambda.executor&quot;: &quot;Run&quot;,
+    &quot;Python.TestLambda_New.executor&quot;: &quot;Run&quot;,
+    &quot;Python.TestMinCost.executor&quot;: &quot;Run&quot;,
+    &quot;Python.TestSampling.executor&quot;: &quot;Run&quot;,
+    &quot;Python.TestSampling_Fixed.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/tengr/Downloads/Desktop&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\tengr\Downloads\Desktop" />
@@ -455,7 +451,15 @@
       <option name="project" value="LOCAL" />
       <updated>1729123494919</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary="update">
+      <option name="closed" value="true" />
+      <created>1729178586971</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1729178586971</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
