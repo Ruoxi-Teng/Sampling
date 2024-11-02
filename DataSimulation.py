@@ -127,7 +127,7 @@ clinics_actual = df['CLINIC']
 color_map = plt.cm.get_cmap('tab20')
 
 # Create the plot
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(6, 4))
 
 for i, clinic in enumerate(clinics):
     clinic_data = df1[df1['CLINIC'] == clinic]
@@ -144,7 +144,7 @@ plt.savefig('Figures/Prevalence_Cip_clinics_simulated.png')
 plt.show()
 
 # Create the plot
-plt.figure(figsize=(15, 8))
+plt.figure(figsize=(6, 4))
 
 # Plot simulated data (df1) in light grey
 for i, clinic in enumerate(clinics_simulated):

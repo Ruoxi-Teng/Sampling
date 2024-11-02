@@ -4,16 +4,16 @@ import matplotlib.pyplot as plt
 from scipy.integrate import trapz
 import seaborn as sns
 
-df = pd.read_csv("Data/CIP_summary_by_sites.csv")
-df = df.drop(columns=df.columns[0])
-df['CipR_Sum_prevalence'] = df['CipR_Sum'] / df['TOTAL']
-dt = pd.read_csv("Data/CIP_summary.csv")
-dt = dt.drop(columns=dt.columns[0])
+# df = pd.read_csv("Data/CIP_summary_by_sites.csv")
+# df = df.drop(columns=df.columns[0])
+# df['CipR_Sum_prevalence'] = df['CipR_Sum'] / df['TOTAL']
+# dt = pd.read_csv("Data/CIP_summary.csv")
+# dt = dt.drop(columns=dt.columns[0])
 
 # Load and preprocess data
-# df = pd.read_csv("Data/site_prevalence_data.csv")
+df = pd.read_csv("Data/site_prevalence_data.csv")
 # df = df.drop(columns=df.columns[0])
-# dt = pd.read_csv("Data/total_prevalence_data.csv")
+dt = pd.read_csv("Data/total_prevalence_data.csv")
 # dt = dt.drop(columns=dt.columns[0])
 
 def preprocess_data(data):
@@ -145,7 +145,7 @@ def calculate_auc(x, y):
 # plot fixed sampling result
 # plot random sampling result
 def plot_random_results(results, treatment_stats_sum, num_clinics):
-    plt.figure(figsize=(12, 6), dpi=700)
+    plt.figure(figsize=(8, 4), dpi=700)
     sample_total = []
     # plot each sample curve
     for sample in results['Sample'].unique():
@@ -198,7 +198,7 @@ treatment_stats_customized = calculate_treatment_stats_sites(df, prevalence_valu
 
 
 def plot_combined_results(results_dict, treatment_stats_sum, treatment_stats_customized, prevalence_values):
-    plt.figure(figsize=(12, 8), dpi=700)
+    plt.figure(figsize=(8, 4), dpi=700)
 
     colors = ['orange', 'gold', 'green']
 
@@ -233,7 +233,7 @@ def plot_combined_results(results_dict, treatment_stats_sum, treatment_stats_cus
              label=f'Customized All sites (AUC: {customized_auc:.4f})')
     plt.xlabel('Failure to Treat (%)')
     plt.ylabel('Unnecessary Treatment (%)')
-    plt.title('Failure to Treat vs. Unnecessary Treatment under different thresholds (2000-2022): Combined Random Results')
+    plt.title('Failure to Treat vs. Unnecessary Treatment (2000-2022): Combined Random Results')
     plt.gca().xaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
     plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
     plt.legend()
@@ -242,10 +242,10 @@ def plot_combined_results(results_dict, treatment_stats_sum, treatment_stats_cus
     return plt.gcf()
 
 results_dict = {}
-for num_clinics in [1, 5, 10]:
+for num_clinics in [5, 10, 20]:
     random_sample_results = select_random_clinics_multiple_samples(df1, num_clinics, 1500)
     results_dict[num_clinics] = random_sample_results
 
 plot = plot_combined_results(results_dict, treatment_stats_sum,treatment_stats_customized,prevalence_values)
-plot.savefig('Figures/Random_Sampling_Combined_GISP.png')
+plot.savefig('Figures/Random_Sampling_Combined_Simulated.png')
 plt.show()

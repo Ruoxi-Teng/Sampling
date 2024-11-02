@@ -185,7 +185,7 @@ def calculate_lambda(x, best_model, best_params):
     else:
         raise ValueError("Unknown model type")
 # calculate selected cost
-def calculate_selected_cost(alpha, beta, num_samples=10000, threshold=None):
+def calculate_selected_cost(alpha, beta, num_samples=100, threshold=None):
     if threshold is None:
         raise ValueError("Threshold must be provided")
 
@@ -247,7 +247,7 @@ def update_data_for_chosen_sites(data_current, data_all_years):
     return data_current
 
 
-def adaptive_sampling(data, num_sites, threshold, num_samples=1000, start_seed=10000):
+def adaptive_sampling(data, num_sites, threshold, num_samples=100, start_seed=10000):
     data = data.sort_values('YEAR')
     years = data['YEAR'].unique()
     all_samples_results = {}
@@ -385,7 +385,7 @@ def calculate_treatment_stats_min_cost(all_sites, selected_sites_samples, preval
 
 # plot random sampling result
 def plot_min_cost_customized_results(results, treatment_stats_sum, treatment_stats_customized, num_clinics):
-    plt.figure(figsize=(12, 6), dpi=700)
+    plt.figure(figsize=(6, 4), dpi=700)
 
     # plot each sample curve
     sample_final = calculate_treatment_stats_min_cost(df, results, prevalence_values)
@@ -436,3 +436,75 @@ for num_clinics in [1, 5, 10]:
     plot.savefig(f'Figures/Min Cost {num_clinics} sites Customized_GISP.png')
     plt.show()
 
+def plot_min_cost_combined_results(results_dict, treatment_stats_sum, treatment_stats_customized):
+    plt.figure(figsize=(6, 4), dpi=700)
+
+    # Color palette for different number of sites
+    colors = {
+        1: 'orange',
+        5: 'old',
+        10: 'green'
+    }
+
+    # Plot each sample curve for different number of sites
+    for num_clinics, results in results_dict.items():
+        # Calculate treatment stats for this number of sites
+        sample_final = calculate_treatment_stats_min_cost(df, results, prevalence_values)
+        samples = sample_final['Sample'].unique()
+
+        # Plot each sample as a light, transparent line
+        for sample in samples:
+            sample_data = sample_final[sample_final['Sample'] == sample]
+            plt.plot(sample_data['FailureToTreatPercentage'],
+                     sample_data['UnnecessaryUsePercentage'],
+                     color=colors[num_clinics],
+                     alpha=0.3)  # very transparent
+
+        # Calculate and plot mean for this number of sites
+        mean_results = sample_final.groupby('Prevalence')[
+            ['FailureToTreatPercentage', 'UnnecessaryUsePercentage']].mean()
+        mean_auc = calculate_auc(mean_results['FailureToTreatPercentage'],
+                                 mean_results['UnnecessaryUsePercentage'])
+        plt.plot(mean_results['FailureToTreatPercentage'],
+                 mean_results['UnnecessaryUsePercentage'],
+                 color=colors[num_clinics],
+                 linestyle='--',
+                 label=f'Mean of {num_clinics} sites (AUC: {mean_auc:.4f})')
+
+    # Plot consistent lines for all sites and customized
+    total_auc = calculate_auc(treatment_stats_sum['FailureToTreatPercentage'],
+                              treatment_stats_sum['UnnecessaryUsePercentage'])
+    plt.plot(treatment_stats_sum['FailureToTreatPercentage'],
+             treatment_stats_sum['UnnecessaryUsePercentage'],
+             color='blue',
+             linewidth=2,
+             label=f'All sites (AUC: {total_auc:.4f})')
+
+    customized_auc = calculate_auc(treatment_stats_customized['FailureToTreatPercentage'],
+                                   treatment_stats_customized['UnnecessaryUsePercentage'])
+    plt.plot(treatment_stats_customized['FailureToTreatPercentage'],
+             treatment_stats_customized['UnnecessaryUsePercentage'],
+             color='red',
+             linewidth=2,
+             label=f'Customized All sites (AUC: {customized_auc:.4f})')
+
+    plt.xlabel('Failure to Treat (%)')
+    plt.ylabel('Unnecessary Treatment (%)')
+    plt.title('Failure to Treat vs. Unnecessary Treatment under Different Thresholds (2000-2022)')
+    plt.gca().xaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
+    plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
+    plt.legend()
+    plt.grid(True)
+
+    return plt.gcf()
+
+
+# Prepare results dictionary
+results_dict = {}
+for num_clinics in [1, 5, 10]:
+    results_dict[num_clinics] = pd.read_csv(f"Data/Min Cost {num_clinics} sites selected_GISP.csv")
+
+# Plot and save
+plot = plot_min_cost_combined_results(results_dict, treatment_stats_sum, treatment_stats_customized)
+plot.savefig('Figures/Combined_Min_Cost_Sites_Customized_GISP.png')
+plt.show()

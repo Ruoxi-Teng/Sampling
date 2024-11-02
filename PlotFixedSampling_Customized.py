@@ -4,17 +4,15 @@ import matplotlib.pyplot as plt
 from scipy.integrate import trapz
 
 # Load and preprocess data
-# df = pd.read_csv("Data/CIP_summary_by_sites.csv")
-# df = df.drop(columns=df.columns[0])
-# df['CipR_Sum_prevalence'] = df['CipR_Sum'] / df['TOTAL']
-# dt = pd.read_csv("Data/CIP_summary.csv")
-# dt = dt.drop(columns=dt.columns[0])
+df = pd.read_csv("Data/CIP_summary_by_sites.csv")
+df = df.drop(columns=df.columns[0])
+df['CipR_Sum_prevalence'] = df['CipR_Sum'] / df['TOTAL']
+dt = pd.read_csv("Data/CIP_summary.csv")
+dt = dt.drop(columns=dt.columns[0])
 
 # Load and preprocess data
-df = pd.read_csv("Data/site_prevalence_data.csv")
-# df = df.drop(columns=df.columns[0])
-dt = pd.read_csv("Data/total_prevalence_data.csv")
-# dt = dt.drop(columns=dt.columns[0])
+# df = pd.read_csv("Data/site_prevalence_data.csv")
+# dt = pd.read_csv("Data/total_prevalence_data.csv")
 def preprocess_data(data):
     min_year, max_year = data['YEAR'].min(), data['YEAR'].max()
     total_years = max_year - min_year + 1
@@ -202,7 +200,7 @@ def calculate_auc(x, y):
 
 # plot fixed sampling result
 def plot_fixed_results(results, treatment_stats_sum, treatment_stats_customized, num_clinics):
-    plt.figure(figsize=(12, 6), dpi=700)
+    plt.figure(figsize=(9, 4), dpi=700)
     sample_total = []
     # plot each sample curve
     for sample in results['Sample'].unique():
@@ -240,7 +238,7 @@ def plot_fixed_results(results, treatment_stats_sum, treatment_stats_customized,
     plt.xlabel('Failure to Treat (%)')
     plt.ylabel('Unnecessary Treatment (%)')
     plt.title(
-        f'Failure to Treat v.s. Unnecessary Treatment under different threshold (2000-2022): Fixed {num_clinics} sites samples Customization')
+        f'Failure to Treat v.s. Unnecessary Treatment (2000-2022): Fixed {num_clinics} sites samples Customized')
     plt.gca().xaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
     plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
     plt.legend()
@@ -251,14 +249,14 @@ prevalence_values=np.arange(0,1.02,0.02)
 treatment_stats_sum=calculate_treatment_stats_sum(dt,prevalence_values)
 treatment_stats_customized=calculate_treatment_stats_sites(df,prevalence_values)
 # result: fixed sampling
-for num_clinics in [5, 10, 20]:
+for num_clinics in [1, 5, 10]:
     fixed_sample_results = select_fixed_clinics_multiple_samples(df1, num_clinics, 100)
     plot = plot_fixed_results(fixed_sample_results,  treatment_stats_sum, treatment_stats_customized,num_clinics)
-    plot.savefig(f'Figures/Fixed {num_clinics} sites Customized_Simulated.png')
+    plot.savefig(f'Figures/Fixed {num_clinics} sites Customized_GISP.png')
     plt.show()
 
 def plot_combined_fixed_results_simplified(results_dict, treatment_stats_sum, treatment_stats_customized):
-    plt.figure(figsize=(12, 8), dpi=700)
+    plt.figure(figsize=(9, 4), dpi=700)
 
     colors = ['orange', 'yellow', 'green']
 
@@ -296,7 +294,7 @@ def plot_combined_fixed_results_simplified(results_dict, treatment_stats_sum, tr
     plt.xlabel('Failure to Treat (%)')
     plt.ylabel('Unnecessary Treatment (%)')
     plt.title(
-        'Failure to Treat vs. Unnecessary Treatment under different thresholds (2000-2022): Combined Fixed Samples')
+        'Failure to Treat vs. Unnecessary Treatment (2000-2022): Combined Fixed Customized Samples')
     plt.gca().xaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
     plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1%}'))
     plt.legend()
@@ -310,10 +308,10 @@ treatment_stats_sum = calculate_treatment_stats_sum(dt, prevalence_values)
 treatment_stats_customized = calculate_treatment_stats_sites(df, prevalence_values)
 
 results_dict = {}
-for num_clinics in [5, 10, 20]:
+for num_clinics in [1, 5, 10]:
     fixed_sample_results = select_fixed_clinics_multiple_samples(df1, num_clinics, 100)
     results_dict[num_clinics] = fixed_sample_results
 
 plot = plot_combined_fixed_results_simplified(results_dict, treatment_stats_sum, treatment_stats_customized)
-plot.savefig('Figures/Combined_Fixed_Samples_Customized_Simulated.png')
+plot.savefig('Figures/Combined_Fixed_Samples_Customized_GISP.png')
 plt.show()
