@@ -211,21 +211,39 @@ def calculate_total_cost(data, selected_indices):
     not_selected_cost = data.loc[~data.index.isin(selected_indices), 'not_selected_cost'].sum()
     return selected_cost + not_selected_cost
 
+
+def calculate_cost_increment(data):
+    """
+    Calculate the increment in cost when selecting each site.
+
+    Parameters:
+    data (pd.DataFrame): DataFrame containing selected_cost and not_selected_cost columns
+
+    Returns:
+    pd.Series: Cost increments for each site
+    """
+    return data['selected_cost'] - data['not_selected_cost']
+
+
+
 # select the best site combination
 def optimize_site_selection(data, num_sites):
-    all_combinations = list(combinations(data.index, num_sites))
-    min_cost = float('inf')
-    best_combination = all_combinations[0]
+    # Calculate cost increment for each site
+    cost_increment = data['selected_cost'] - data['not_selected_cost']
 
-    for combination in all_combinations:
-        current_cost = calculate_total_cost(data, list(combination))
-        if current_cost < min_cost:
-            min_cost = current_cost
-            best_combination = combination
+    # Sort sites by cost increment and get the best ones
+    best_combination = cost_increment.nsmallest(num_sites).index.tolist()
 
+    # Calculate total cost for selected combination
+    min_cost = calculate_total_cost(data, best_combination)
+
+    # Update selection in data
     data['sites_chosen'] = 0
-    data.loc[list(best_combination), 'sites_chosen'] = 1
-    chosen_sites = data.loc[list(best_combination), 'CLINIC'].tolist()
+    data.loc[best_combination, 'sites_chosen'] = 1
+
+    # Get chosen clinic names
+    chosen_sites = data.loc[best_combination, 'CLINIC'].tolist()
+
     return {'data': data, 'min_cost': min_cost, 'chosen_sites': chosen_sites}
 
 # update the data for chosen site
